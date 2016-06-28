@@ -58,6 +58,7 @@ c *** For paper see Hunt & Kawata 2015, MNRAS, 450, 2132 ***
 
 c *** For ASCII input file ini/input.dat ***
 c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar) ***
+c *** Note metallciity in z not [Fe/H]
 
 c *** USER OPTIONS ***
 c *** Output to binary (1) or ASCII (0)? ***
@@ -241,7 +242,7 @@ c         read(30,2030,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
 c         write(15,16) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
          nparts=nparts+1
          xsun=xsun/100.0d0
-         x_p=x_p/100.0d0
+         x_p=x_p/100.0d0 
          y_p=y_p/100.0d0
          z_p=z_p/100.0d0
          vx_p=(vx_p+usun)/VUKMS
@@ -292,11 +293,9 @@ c *** Make grids l,b,d ***
                de3(i)=i*dd3-2.0d0
             enddo
 c *** Model l,b,d ***
-         l_p=-datan2(y_p,-x_p)+M_PI
-         b_p=dasin(z_p/d_p)
-         vrots=(-1.0d0*((x_p*vy_p-y_p*vx_p)/d_p))
-c         vl_p=vrots/(4.74d0*(d_p*1000.0d0))
-c         vb_p=vz_p/(4.74d0*(d_p*1000.0d0))
+            l_p=-datan2(y_p,-x_p)+M_PI
+            b_p=dasin(z_p/d_p)
+            vrots=(-1.0d0*((x_p*vy_p-y_p*vx_p)/d_p))
 c *** Find il,ib,id for particles ***
             il=int(l_p/dl)
             ib=int((b_p+(M_PI/2.0d0))/db)
@@ -618,24 +617,18 @@ c *** Ascii ***
                                 if ((q.eq.0).and.(m.eq.0)) then
                                    write(6,*) 'Writing Gaia ascii'
                                 endif
-
-                                write(10,104) lo_p,bo_p,vl_p,vb_p,vlo_p,
-     &                               vbo_p,x_p*LUKPC,y_p*LUKPC,d_p,od_p,
-     &                               xo_p,yo_p,zo_p,Vgen,Ta(3),Tao(3)
-     &                               ,Tae(3)
-
-c                                write(10,102) (a(j),j=1,6),(ao(j),j=1,6)
-c     &                             ,(ae(j),j=1,6),(p(j),j=1,2)
-c     &                             ,(po(j),j=1,2),(pe(j),j=1,2)
-c     &                             ,vgen,d_p,x_p,y_p,z_p,vx_p,vy_p,vz_p
-c     &                             ,mgen,GRVS,VIgen,ex31,avgen
-c     &                             ,avgen-aigen,z,PAge,od_p,xo_p,yo_p
-c     &                             ,zo_p,vxo_p,vyo_p,vzo_p,vro_p,vroto_p
-c     &                             ,rp,vr_p,vrot_p,rop,makms,mdkms
-c     &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
-c     &                             ,vl_p,vb_p,vlo_p,vbo_p
-c     &                             ,ugen,bgen,rgen,jgen,hgen,kgen
-c     &                             ,Ue,Ve,We
+                                write(10,102) (a(j),j=1,6),(ao(j),j=1,6)
+     &                             ,(ae(j),j=1,6),(p(j),j=1,2)
+     &                             ,(po(j),j=1,2),(pe(j),j=1,2)
+     &                             ,vgen,d_p,x_p,y_p,z_p,vx_p,vy_p,vz_p
+     &                             ,mgen,GRVS,VIgen,ex31,avgen
+     &                             ,avgen-aigen,z,PAge,od_p,xo_p,yo_p
+     &                             ,zo_p,vxo_p,vyo_p,vzo_p,vro_p,vroto_p
+     &                             ,rp,vr_p,vrot_p,rop,makms,mdkms
+     &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
+     &                             ,vl_p,vb_p,vlo_p,vbo_p
+     &                             ,ugen,bgen,rgen,jgen,hgen,kgen
+     &                             ,Ue,Ve,We
 c *** Binary ***
                              else
                                 if ((q.eq.0).and.(m.eq.0)) then
@@ -656,13 +649,8 @@ c *** Binary ***
                               endif
                            endif
                            if (error.ge.2) then
-                              if (od_p.gt.0.0d0) then
-                                 if (od_p.lt.4.5d0) then
-c                                    if (Tao(3)/Tae(3).gt.5.0d0) then
-c                                    if (l_p.gt.1.48353d0) then
-c                                       if (l_p.lt.1.65806d0) then
-c                                          if (b_p.gt.-0.0872665d0) then
-c                                           if (b_p.lt.0.0872665d0) then
+c                              if (od_p.gt.0.0d0) then
+c                                 if (od_p.lt.4.5d0) then
                               if ((q.eq.0).and.(m.eq.0)) then
                                  write(6,*) 'Writing TGAS ASCII'
                               endif
@@ -670,42 +658,16 @@ c                                           if (b_p.lt.0.0872665d0) then
                               vbo_p=vbo_p*4.74d0*od_p*1000.0d0
                               vl_p=vl_p*4.74d0*d_p*1000.0d0
                               vb_p=vb_p*4.74d0*d_p*1000.0d0
-c                              write(10,103) (Ta(j),j=1,5),
-c     &                         (Tao(j),j=1,5),(Tae(j),j=1,5),Vgen,
-c     &                         d_p,x_p*LUKPC,y_p*LUKPC,z_p*LUKPC
-c     &                         ,vx_p*VUKMS,vy_p*VUKMS,vz_p*VUKMS,mgen
-c     &                         ,GRVS,VIgen,ex31,avgen,avgen-aigen,z,
-c     &                         PAge,od_p,xo_p,yo_p,zo_p,rp,vr_p,vrot_p
-c     &                         ,l_p,b_p,vl_p,vb_p,lo_p,bo_p,vlo_p,vbo_p
-c     &                         ,Tao(3)/Tae(3),l2_p,b2_p
-
-c *** Temp for paper ***
-                              lo_p=(lo_p*180.0d0)/M_PI
-                              bo_p=(bo_p*180.0d0)/M_PI
-                              if (lo_p.gt.205.0d0) then
-                                 if (lo_p.lt.215.0d0) then
-                                    if (bo_p.lt.5.0d0) then
-                                       if (bo_p.gt.-5.0d0) then
-                                          if (od_p.lt.4.5d0) then
-c                                             if (od_p.gt.0.0d0) then
-                              write(10,104) lo_p,bo_p,vl_p,vb_p,vlo_p,
-     &                             vbo_p,x_p*LUKPC,y_p*LUKPC,d_p,od_p,
-     &                             xo_p,yo_p,zo_p,Vgen,Ta(3),Tao(3)
-     &                             ,Tae(3)
-                              vl_p=vl_p/(4.74d0*d_p*1000.0d0)
-                              vb_p=vb_p/(4.74d0*d_p*1000.0d0)
-                              vlo_p=vlo_p/(4.74d0*od_p*1000.0d0)
-                              vbo_p=vbo_p/(4.74d0*od_p*1000.0d0)
-                              lo_p=(lo_p/180.0d0)*M_PI
-                              bo_p=(bo_p/180.0d0)*M_PI
-c                                             endif
-                                             endif
-                                          endif
-                                       endif
-                                    endif
-                                    endif
-                                 endif
-                              endif
+                              write(10,103) (Ta(j),j=1,5),
+     &                         (Tao(j),j=1,5),(Tae(j),j=1,5),Vgen,
+     &                         d_p,x_p*LUKPC,y_p*LUKPC,z_p*LUKPC
+     &                         ,vx_p*VUKMS,vy_p*VUKMS,vz_p*VUKMS,mgen
+     &                         ,GRVS,VIgen,ex31,avgen,avgen-aigen,z,
+     &                         PAge,od_p,xo_p,yo_p,zo_p,rp,vr_p,vrot_p
+     &                         ,l_p,b_p,vl_p,vb_p,lo_p,bo_p,vlo_p,vbo_p
+     &                         ,Tao(3)/Tae(3),l2_p,b2_p
+c                                 endif
+c                              endif
                            endif
                            GenSel=GenSel+1
 c                           endif
