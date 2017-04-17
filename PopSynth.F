@@ -2,7 +2,7 @@
       implicit none
       integer MN,MNSc,MN3D,MNiso,npr
       double precision VUKMS,LUKPC,mtemp
-      parameter (MN=5000000)
+      parameter (MN=10000000)
       parameter (MNiso=34)
       parameter (MNSc=4096)
       parameter (MN3D=1024)
@@ -82,12 +82,13 @@ c *** Random seed ***
       idum=-1314
 c *** Set Sun position / velocity ***
       xsun=-8.0d0
-      zsun=0.0d0
+      zsun=0.05d0
       vlsr=1.1d0*VUKMS
 c *** vlsr=1.1d0*VUKMS=228.14 km/s ***
-      usun=0.0d0
-      vsun=0.0d0
-      wsun=0.0d0
+c *** 11.1,12.24,7.25 from Schoenrich, Binney & Dehnen ***
+      usun=11.1d0
+      vsun=12.24d0
+      wsun=7.25d0
 c *** END USER OPTIONS ***
 
       if (xIMF.eq.1) then
@@ -194,7 +195,7 @@ c *** Read data ***
 c *** Open files to read & write ***
 c *** open output file (binary or ASCII) ***
       if (Binary.eq.0) then
-         open(10,file='output/DaisukeOutKroupa210.dat'
+         open(10,file='output/TP107TGASK.dat'
      &        ,status='unknown')
 c         open(15,file='ini/input.dat',status='unknown')
       else
@@ -203,16 +204,21 @@ c         open(15,file='ini/input.dat',status='unknown')
       endif
 c *** Open input file ***
 c *** For example file (lbs.dat format)***
-      open(30,file='ini/DaisukeInput.dat',status='unknown')
+c      open(30,file='ini/lbsels-2015-25deglt10.dat',status='unknown')
+c      open(30,file='ini/DaisukeInput.dat',status='unknown')
+
+
 c      open(30,file='ini/l85-270bfullFaure.dat',status='unknown')
 c      open(30,file='ini/lbsels.dat',status='unknown')
 c 2030 format(16(1pE13.5),I10)
- 2030  format(17(1pE13.5),I10)
+c 2030  format(17(1pE13.5),I10)
  2031 format(13(1pE13.5))
 c *** For simpler file ***
 c      open(30,file='ini/input.dat',status='unknown')
 c 2030 format(9(1pE13.5))
-      np=50000000
+      open(30,file='ini/d001000',status='unknown')
+ 2030 format(7(1pE13.5),I10,2(1pE13.5))
+      np=10000000
       sumgen=0.0d0
       mtotalneed=0.0d0
       nparts=0
@@ -220,8 +226,8 @@ c   16 format(9(1pE13.5))
       do q=0,np-1
          mtemp=0.0d0
 c *** For example file (DaisukeInupt.dat) ***
-         read(30,2030,end=603) l2_p,b2_p,dummy,x_p,y_p,z_p,dummy,
-     &        dummy,dummy,vx_p,vy_p,vz_p,dummy,dummy,z,tss,m_p,dummyint
+c         read(30,2030,end=603) l2_p,b2_p,dummy,x_p,y_p,z_p,dummy,
+c     &        dummy,dummy,vx_p,vy_p,vz_p,dummy,dummy,z,tss,m_p,dummyint
 c *** For example file (Faure.dat) ***
 c         read(30,2030,end=603) l2_p,b2_p,dummy,x_p,y_p,z_p,dummy,
 c     &        dummy,vx_p,vy_p,vz_p,dummy,dummy
@@ -234,38 +240,44 @@ c         PAge=dlog10(6000000000.0d0)
 c         z=19000.0d0
 c above is roughly right range, not dispersion
 c 1.2589254*19000 (23919)- 0.7943282*19000 (15092)
-c *** For example file (lbs.dat) ***
+c *** For example file (old lbs.dat) ***
 c         read(30,2030,end=603) dummy,dummy,dummy,x_p,y_p,z_p,dummy,
 c     &        dummy,vx_p,vy_p,vz_p,dummy,dummy,z,tss,m_p,dummyint
 c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar)
-c         read(30,2030,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
+         read(30,2030,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,m_p,dummyint
+     &        ,dummy,dummy
+cz,tss,m_p
 c         write(15,16) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
          nparts=nparts+1
          xsun=xsun/100.0d0
-         x_p=x_p/100.0d0 
-         y_p=y_p/100.0d0
-         z_p=z_p/100.0d0
-         vx_p=(vx_p+usun)/VUKMS
-         vy_p=(vy_p+vlsr+vsun)/VUKMS
-         vz_p=(vz_p+wsun)/VUKMS
-         z=z*1e6
-         if (z.lt.100.0d0) then
-            z=100.0d0
-         else if (z.gt.30000.0d0) then
-            z=30000.0d0
-         endif 
+         zsun=zsun/100.d0
+         m_p=m_p*1.0e11/6.8d0
+c         x_p=x_p/100.0d0 
+c         y_p=y_p/100.0d0
+c         z_p=z_p/100.0d0
+c         vx_p=vx_p/VUKMS
+c         vy_p=(vy_p+vlsr)/VUKMS
+c         vz_p=vz_p/VUKMS
+         vy_p=vy_p+vlsr/VUKMS
+c         z=z*1e6
+c         if (z.lt.100.0d0) then
+c            z=100.0d0
+c         else if (z.gt.30000.0d0) then
+c            z=30000.0d0
+c         endif 
          z_p=z_p-zsun
+         x_p=x_p-xsun
          rp=dsqrt((x_p+xsun)**2+y_p**2)
-         vr_p=((vx_p*(x_p+xsun)+vy_p*y_p+vz_p*z_p)/rp)*VUKMS
+         vr_p=((vx_p*(x_p+xsun)+vy_p*y_p+vz_p*(z_p+zsun))/rp)*VUKMS
          vrot_p=(-1.0d0*((x_p+xsun)*vy_p-y_p*vx_p)/rp)*VUKMS
          rp=dsqrt((x_p+xsun)**2+y_p**2+(z_p+zsun)**2)
          d_p=dsqrt(x_p**2+y_p**2+z_p**2)
          dmod=5.0d0*(dlog10(d_p*100000.0d0)-1.0d0)
-         PAge=log10(tss*1000000000.0d0)
+c         PAge=log10(tss*1000000000.0d0)
 c *** Find approproate isochrone segment ***
 c *** Random age & metallicity if unknown ***
-c     z=(ran1(idum)*0.9d0+0.1d0)*19000.0d0
-c      PAge=log10(ran1(idum)*12000000000.0d0)
+         z=(ran1(idum)*0.9d0+0.1d0)*19000.0d0
+         PAge=log10(ran1(idum)*12000000000.0d0)
          ageindex=nint((PAge-6.6d0)/0.02d0)
          if (ageindex.lt.0) then 
             ageindex=0
@@ -351,10 +363,10 @@ c *** 3D extinction factor ***
 c *** Final extinciton value ***
             ex=ex3*exS
 c *** Schlegel Modified as per Sharma et al (2014) ***
-            ex=ex*(0.6d0+0.2d0*(1.0d0-dtanh((ex-0.15d0)/0.1d0)))
+c            ex=ex*(0.6d0+0.2d0*(1.0d0-dtanh((ex-0.15d0)/0.1d0)))
             if (q.eq.0) then
-               write(6,*) 'Using correction from Sharma et al. (2014)'
-c            write(6,*) 'Not using correction from Sharma et al. (2014)'
+c               write(6,*) 'Using correction from Sharma et al. (2014)'
+            write(6,*) 'Not using correction from Sharma et al. (2014)'
             endif
          else
             ex=0.0d0
@@ -530,7 +542,7 @@ c *** Write stellar output ***
 c *** Add Gaia errors ***
                            if (error.ne.0) then
 c *** mission length in months, 60=5 years ***
-                              month=60.0d0
+                              month=14.0d0
 c *** Calibration astrometric factor:
 c *** CAfactor=1.0d0 means no calibration errors added ***
 c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
@@ -580,26 +592,27 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
      &                             vl_p,vb_p)
                               od_p=1.0d0/(Tao(3)*1.0e3)
                            endif
-                           rop=dsqrt((xo_p+xsun)**2+yo_p**2)
+                           rop=dsqrt((xo_p+xsun)**2+yo_p**2)*LUKPC
+                           xo_p=xo_p*LUKPC
+                           yo_p=yo_p*LUKPC
+                           zo_p=zo_p*LUKPC
+                           xsun=xsun*LUKPC
                            if (error.lt.2) then
                               od_p=1.0d0/(ao(3)*1.0e3)
-                              vro_p=((vxo_p*(xo_p+xsun)+vyo_p*yo_p
-     &                          +vzo_p*(zo_p+zsun))/rop)*VUKMS
+                              vro_p=((vxo_p*(xo_p+xsun)+vyo_p*yo_p)/rop)
                               vroto_p=(-1.0d0*((xo_p+xsun)*vyo_p-yo_p
-     &                             *vxo_p)/rop)*VUKMS
+     &                             *vxo_p)/rop)
                               vrots=(-1.0d0*(xo_p*vyo_p-yo_p*vxo_p)/
-     &                             (od_p/100.0d0))*VUKMS
+     &                             (od_p/100.0d0))
                               rop=dsqrt((xo_p+xsun)**2+yo_p**2
      &                             +(zo_p+zsun)**2)
                               vlo_p=vrots/(4.74d0*(od_p*1000.0d0))
                               vbo_p=vzo_p*VUKMS/(4.74d0*(od_p*1000.0d0))
                            endif
+                           xsun=xsun/LUKPC
                            x_p=x_p/LUKPC
                            y_p=y_p/LUKPC
                            z_p=z_p/LUKPC
-                           xo_p=xo_p*LUKPC
-                           yo_p=yo_p*LUKPC
-                           zo_p=zo_p*LUKPC
                            d_p=d_p*LUKPC
                            GRVS=Vgen-0.0119d0-1.2092d0*VIgen+0.0188d0
      &                          *(VIgen**2)+0.0005d0*(VIgen**3)
@@ -610,7 +623,13 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
 c **** HERE YOU CAN ADD CUSTOM REQUIREMENTS FOR OUTPUTS ****
 c                           if ((od_p.gt.0.0d0).and.
 c     &                          (od_p.lt.40.0d0)) then
-c                           if (GRVS.lt.16.5d0) then
+                           if (GRVS.lt.16.2d0) then
+                           lo_p=(lo_p*180.0d0)/M_PI
+                           bo_p=(bo_p*180.0d0)/M_PI
+c                           if (lo_p.gt.175.0d0) then
+c                           if (lo_p.lt.185.0d0) then
+c                           if (bo_p.gt.-5.0d0) then
+c                           if (bo_p.lt.5.0d0) then
                            if (error.lt.2) then
                               if (Binary.eq.0) then
 c *** Ascii ***
@@ -670,6 +689,9 @@ c                                 endif
 c                              endif
                            endif
                            GenSel=GenSel+1
+                           endif
+c                           endif
+c                           endif
 c                           endif
 c                           endif
 c *** END CUSTOM SELECTIONS ***
@@ -686,8 +708,8 @@ c *** END CUSTOM SELECTIONS ***
             endif
          enddo
 c *** Percentage done ***
-  601    if (int((float(q)/float(4292289))*100.0d0).gt.per2) then
-            per2=int((float(q)/float(4292289))*100.0d0)
+  601    if (int((float(q)/float(10000000))*100.0d0).gt.per2) then
+            per2=int((float(q)/float(10000000))*100.0d0)
 c            if (inputdata.lt.2) then
                write(6,'(1I3,$)') per2
 c            endif
