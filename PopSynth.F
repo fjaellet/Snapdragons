@@ -64,25 +64,27 @@ c *** USER OPTIONS ***
 c *** Output to binary (1) or ASCII (0)? ***
       Binary=0
 c *** Minimum magnitude necessary ***
-      ChosenLim=11.25d0
+      ChosenLim=16.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c *** Add Gaia errors? 
 c *** 0=No errors
 c *** 1=Gaia end of mission (or part of with later change)
 c *** 2=TGAS Tycho stars
 c *** 3=TGAS Hipparcos stars only
-      error=2
+      error=1
+c *** mission length in months, 60=5 years ***
+      month=60.0d0
 c *** Add Milky Way Extinction (1=yes) ***
       EXTINCT=1
 c *** Extintion map (1=Schlegel, 0=2d analytic) ***
       Schlegel=1
-c *** Choose IMF (Salpeter=1, Kroupa=2 BETA, at your risk) ***
+c *** Choose IMF (Salpeter=1, Kroupa=2) ***
       xIMF=2
 c *** Random seed ***
       idum=-1314
 c *** Set Sun position / velocity ***
       xsun=-8.0d0
-      zsun=0.05d0
+      zsun=0.02d0
       vlsr=1.1d0*VUKMS
 c *** vlsr=1.1d0*VUKMS=228.14 km/s ***
 c *** 11.1,12.24,7.25 from Schoenrich, Binney & Dehnen ***
@@ -94,7 +96,7 @@ c *** END USER OPTIONS ***
       if (xIMF.eq.1) then
          write(6,*) 'Using Salpeter IMF'
       else if (xIMF.eq.2) then
-         write(6,*) 'Using Kroupa IMF (beta)'
+         write(6,*) 'Using Kroupa IMF'
       endif
       if (error.eq.0) then
          write(6,*) 'No error added'
@@ -195,7 +197,7 @@ c *** Read data ***
 c *** Open files to read & write ***
 c *** open output file (binary or ASCII) ***
       if (Binary.eq.0) then
-         open(10,file='output/TP107TGASK.dat'
+         open(10,file='output/GeneratedStars.dat'
      &        ,status='unknown')
 c         open(15,file='ini/input.dat',status='unknown')
       else
@@ -212,13 +214,14 @@ c      open(30,file='ini/l85-270bfullFaure.dat',status='unknown')
 c      open(30,file='ini/lbsels.dat',status='unknown')
 c 2030 format(16(1pE13.5),I10)
 c 2030  format(17(1pE13.5),I10)
- 2031 format(13(1pE13.5))
+c 2031 format(13(1pE13.5))
 c *** For simpler file ***
-c      open(30,file='ini/input.dat',status='unknown')
-c 2030 format(9(1pE13.5))
-      open(30,file='ini/d001000',status='unknown')
- 2030 format(7(1pE13.5),I10,2(1pE13.5))
-      np=10000000
+      open(30,file='ini/auriga/ascii_gz_halo_6_127.dat'
+     &     ,status='unknown')
+ 2030 format(9(1pE13.5))
+c      open(30,file='ini/d001000',status='unknown')
+c 2030 format(7(1pE13.5),I10,2(1pE13.5))
+      np=MN
       sumgen=0.0d0
       mtotalneed=0.0d0
       nparts=0
@@ -244,27 +247,34 @@ c *** For example file (old lbs.dat) ***
 c         read(30,2030,end=603) dummy,dummy,dummy,x_p,y_p,z_p,dummy,
 c     &        dummy,vx_p,vy_p,vz_p,dummy,dummy,z,tss,m_p,dummyint
 c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar)
-         read(30,2030,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,m_p,dummyint
-     &        ,dummy,dummy
+         read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
 cz,tss,m_p
 c         write(15,16) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
          nparts=nparts+1
-         xsun=xsun/100.0d0
-         zsun=zsun/100.d0
-         m_p=m_p*1.0e11/6.8d0
-c         x_p=x_p/100.0d0 
-c         y_p=y_p/100.0d0
-c         z_p=z_p/100.0d0
-c         vx_p=vx_p/VUKMS
-c         vy_p=(vy_p+vlsr)/VUKMS
-c         vz_p=vz_p/VUKMS
-         vy_p=vy_p+vlsr/VUKMS
-c         z=z*1e6
-c         if (z.lt.100.0d0) then
-c            z=100.0d0
-c         else if (z.gt.30000.0d0) then
-c            z=30000.0d0
-c         endif 
+         if (q.eq.0) then
+            xsun=xsun/100.0d0
+            zsun=zsun/100.0d0
+         endif
+c         m_p=m_p*1.0e11/6.8d0
+         x_p=x_p/100.0d0 
+         y_p=y_p/100.0d0
+         z_p=z_p/100.0d0
+         vx_p=(vx_p+usun)/VUKMS
+         vy_p=(vy_p+vlsr+vsun)/VUKMS
+         vz_p=(vz_p+wsun)/VUKMS
+c         vy_p=vy_p+vlsr
+c *** If metallicity in [M/H] (dex) - for marigo, should change ***
+c         z=0.019*(10.**z)
+c *** From Auriga ***
+         z=z*0.0019d0
+c *** Turn to internal for isochrone matching ***
+         z=z*1e6
+c         write(6,*) z
+         if (z.lt.100.0d0) then
+            z=100.0d0
+         else if (z.gt.30000.0d0) then
+            z=30000.0d0
+         endif 
          z_p=z_p-zsun
          x_p=x_p-xsun
          rp=dsqrt((x_p+xsun)**2+y_p**2)
@@ -272,18 +282,20 @@ c         endif
          vrot_p=(-1.0d0*((x_p+xsun)*vy_p-y_p*vx_p)/rp)*VUKMS
          rp=dsqrt((x_p+xsun)**2+y_p**2+(z_p+zsun)**2)
          d_p=dsqrt(x_p**2+y_p**2+z_p**2)
+c         write(6,*) 'dp=',d_p,'rp=',rp,xsun,zsun
          dmod=5.0d0*(dlog10(d_p*100000.0d0)-1.0d0)
-c         PAge=log10(tss*1000000000.0d0)
+         PAge=log10(tss*1000000000.0d0)
 c *** Find approproate isochrone segment ***
 c *** Random age & metallicity if unknown ***
-         z=(ran1(idum)*0.9d0+0.1d0)*19000.0d0
-         PAge=log10(ran1(idum)*12000000000.0d0)
+c         z=(ran1(idum)*0.9d0+0.1d0)*19000.0d0
+c         PAge=log10(ran1(idum)*12000000000.0d0)
          ageindex=nint((PAge-6.6d0)/0.02d0)
          if (ageindex.lt.0) then 
             ageindex=0
          else if (ageindex.gt.181) then
             ageindex=181
          endif
+c         write(6,*) 'ageindex=',ageindex,'z=',z,'d_p=',d_p
 c *** extinction (CTIO) ***
          if (EXTINCT.eq.1) then
 c *** Make grids l,b,d ***
@@ -363,10 +375,10 @@ c *** 3D extinction factor ***
 c *** Final extinciton value ***
             ex=ex3*exS
 c *** Schlegel Modified as per Sharma et al (2014) ***
-c            ex=ex*(0.6d0+0.2d0*(1.0d0-dtanh((ex-0.15d0)/0.1d0)))
+            ex=ex*(0.6d0+0.2d0*(1.0d0-dtanh((ex-0.15d0)/0.1d0)))
             if (q.eq.0) then
-c               write(6,*) 'Using correction from Sharma et al. (2014)'
-            write(6,*) 'Not using correction from Sharma et al. (2014)'
+               write(6,*) 'Using correction from Sharma et al. (2014)'
+c            write(6,*) 'Not using correction from Sharma et al. (2014)'
             endif
          else
             ex=0.0d0
@@ -413,6 +425,7 @@ c *** Calc Milb ***
                   if (mag.lt.ChosenLim) then
                      frac=(ChosenLim-mag2)/(mag-mag2)
                      Milb=(Mi(l)-Mi(l-1))*frac+Mi(l-1)
+c                     write(6,*) Milb
                      goto 667
 c *** Interpolate ***
                   endif
@@ -473,6 +486,7 @@ c *** Calc number to generate ***
                if (Ns.eq.0) then
                   goto 601
                endif
+c               write(6,*) q,Ns
 c *** Generate stars ***
                do m=0,Ns-1
                   R=ran1(idum)
@@ -541,8 +555,6 @@ c *** Write stellar output ***
                            enddo
 c *** Add Gaia errors ***
                            if (error.ne.0) then
-c *** mission length in months, 60=5 years ***
-                              month=14.0d0
 c *** Calibration astrometric factor:
 c *** CAfactor=1.0d0 means no calibration errors added ***
 c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
@@ -597,6 +609,7 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
                            yo_p=yo_p*LUKPC
                            zo_p=zo_p*LUKPC
                            xsun=xsun*LUKPC
+                           zsun=zsun*LUKPC
                            if (error.lt.2) then
                               od_p=1.0d0/(ao(3)*1.0e3)
                               vro_p=((vxo_p*(xo_p+xsun)+vyo_p*yo_p)/rop)
@@ -610,6 +623,7 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
                               vbo_p=vzo_p*VUKMS/(4.74d0*(od_p*1000.0d0))
                            endif
                            xsun=xsun/LUKPC
+                           zsun=zsun/LUKPC
                            x_p=x_p/LUKPC
                            y_p=y_p/LUKPC
                            z_p=z_p/LUKPC
