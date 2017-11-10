@@ -1,7 +1,8 @@
 # Snapdragons
 Snapdragons population synthesis &amp; mock survey data generation code 
 
-Input, N-body model with x,y,z,vx,vy,vz,
+Input: N-body model.
+Output: Stellar data.
 
 Compile with:
 
@@ -9,6 +10,8 @@ gfortran PopSynth.F Gaia-errors.F TGAS-errors.F -mcmodel=medium -o Snapdragons
 
 Input in PopSynth.F is
 open(30,file='ini/input.dat',status='unknown')
+c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar)
+         read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
 
 Output to GeneratedStars.dat or GeneratedStars.bin depending on the flag at the beginning
 c *** Output to binary (1) or ASCII (0)? ***
