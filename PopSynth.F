@@ -2,7 +2,7 @@
       implicit none
       integer MN,MNSc,MN3D,MNiso,npr
       double precision VUKMS,LUKPC,mtemp
-      parameter (MN=10000000)
+      parameter (MN=9125000)
       parameter (MNiso=34)
       parameter (MNSc=4096)
       parameter (MN3D=1024)
@@ -68,7 +68,7 @@ c *** Minimum magnitude necessary ***
       write(6,*) 'Limited to V<',ChosenLim
 c *** Add Gaia errors? 
 c *** 0=No errors
-c *** 1=Gaia end of mission (or part of with later change)
+c *** 1=Gaia - Use 'Months' to set intermediate data releases
 c *** 2=TGAS Tycho stars
 c *** 3=TGAS Hipparcos stars only
       error=1
@@ -216,7 +216,7 @@ c 2030 format(16(1pE13.5),I10)
 c 2030  format(17(1pE13.5),I10)
 c 2031 format(13(1pE13.5))
 c *** For simpler file ***
-      open(30,file='ini/auriga/ascii_gz_halo_6_127.dat'
+      open(30,file='ini/input.dat'
      &     ,status='unknown')
  2030 format(9(1pE13.5))
 c      open(30,file='ini/d001000',status='unknown')
@@ -266,7 +266,7 @@ c         vy_p=vy_p+vlsr
 c *** If metallicity in [M/H] (dex) - for marigo, should change ***
 c         z=0.019*(10.**z)
 c *** From Auriga ***
-         z=z*0.0019d0
+c         z=z*0.0019d0
 c *** Turn to internal for isochrone matching ***
          z=z*1e6
 c         write(6,*) z
