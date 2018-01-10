@@ -64,7 +64,7 @@ c *** USER OPTIONS ***
 c *** Output to binary (1) or ASCII (0)? ***
       Binary=0
 c *** Minimum magnitude necessary ***
-      ChosenLim=16.0d0
+      ChosenLim=11.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c *** Add Gaia errors? 
 c *** 0=No errors
@@ -124,7 +124,7 @@ c *** Read extinction arrays ***
      &           ,form='unformatted')
             write(6,*) 'Reading Extinction arrays'
             do i=0,16777215
-               read(51) datS(i)
+               read(51,end=156) datS(i)
             enddo
             dl=(2.0d0*M_PI)/4095.0d0 
             db=M_PI/4095.0d0   
@@ -134,18 +134,18 @@ c *** Read extinction arrays ***
      &           ,form='unformatted')
             write(6,*) 'Reading Extinction arrays'
             do i=0,1048575
-               read(51) datS(i)
+               read(51,END=156) datS(i)
             enddo
              write(6,*) '2D analytical extinction array Read'
              dl=(2.0d0*M_PI)/1023.0d0 
              db=M_PI/1023.0d0   
          endif
-         close(51)
+ 156     close(51)
          open(51,file='ini/3dEx1.bin',status='old',form='unformatted')
          do i=0,104857599
-            read(51) dat3(i)
+            read(51,END=158) dat3(i)
          enddo
-         close(51)
+ 158     close(51)
          write(6,*) '3D factor array Read'
          write(6,*) 'Extinction running'
 c     0<l<2*pi 
