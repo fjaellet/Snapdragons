@@ -6,7 +6,9 @@ Output: Stellar data.
 
 Compile with:
 
-gfortran PopSynth.F Gaia-errors.F TGAS-errors.F -mcmodel=medium -o Snapdragons
+gfortran PopSynth.F Gaia-errors.F TGAS-errors.F -o Snapdragons
+
+(If you want to increase MN to include more than ~9125000 N-body particle model you may need to add -mcmodel=medium after TGAS-errors.F)
 
 Input in PopSynth.F is
 
