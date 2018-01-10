@@ -9,17 +9,25 @@ Compile with:
 gfortran PopSynth.F Gaia-errors.F TGAS-errors.F -mcmodel=medium -o Snapdragons
 
 Input in PopSynth.F is
+
 open(30,file='ini/input.dat',status='unknown')
+
 c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar)
-         read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
+
+read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
 
 Output to GeneratedStars.dat or GeneratedStars.bin depending on the flag at the beginning
+
 c *** Output to binary (1) or ASCII (0)? ***
-      Binary=0
+
+Binary=0
 
 You should also set magnitude limit up to which to generate the stars:
+
 c *** Minimum magnitude necessary ***
+
       ChosenLim=16.0d0
+
       write(6,*) 'Limited to V<‘,ChosenLim
 
 The Attached PopSynth.F has the full range of outputs turned on, but you can adjust that by taking out fields from the below 
