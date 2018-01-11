@@ -126,7 +126,7 @@ c *** Read extinction arrays ***
             do i=0,16777215
                read(51,end=156) datS(i)
             enddo
-            dl=(2.0d0*M_PI)/4095.0d0 
+ 156        dl=(2.0d0*M_PI)/4095.0d0 
             db=M_PI/4095.0d0   
             write(6,*) 'Schlegel extinction array Read'
          else
@@ -134,13 +134,13 @@ c *** Read extinction arrays ***
      &           ,form='unformatted')
             write(6,*) 'Reading Extinction arrays'
             do i=0,1048575
-               read(51,END=156) datS(i)
+               read(51,END=157) datS(i)
             enddo
              write(6,*) '2D analytical extinction array Read'
-             dl=(2.0d0*M_PI)/1023.0d0 
+ 157         dl=(2.0d0*M_PI)/1023.0d0 
              db=M_PI/1023.0d0   
          endif
- 156     close(51)
+         close(51)
          open(51,file='ini/3dEx1.bin',status='old',form='unformatted')
          do i=0,104857599
             read(51,END=158) dat3(i)
