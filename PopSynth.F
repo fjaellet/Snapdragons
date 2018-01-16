@@ -73,6 +73,7 @@ c *** 2=TGAS Tycho stars
 c *** 3=TGAS Hipparcos stars only
       error=1
 c *** mission length in months, 60=5 years ***
+c *** 22 months for Gaia DR2 (testing ongoing) ***
       month=60.0d0
 c *** Add Milky Way Extinction (1=yes) ***
       EXTINCT=1
