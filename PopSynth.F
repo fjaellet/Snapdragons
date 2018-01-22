@@ -27,7 +27,7 @@
       double precision vl_p,vb_p,vlo_p,vlo2,vbo_p,vrots,mtn,Nsf
      &     ,lo_p,bo_p,l2_p,b2_p
       double precision M_hec,period,pmode,logMdot,intIMF,Msmin
-      double precision xsun,zsun,usun,vsun,wsun,vlsr,mtotalneed
+      double precision xsun,ysun,zsun,usun,vsun,wsun,vlsr,mtotalneed
       double precision d_p,Milb,mag,mgen,sumgen,R,tss,month
       double precision x_p,y_p,z_p,vx_p,vy_p,vz_p,m_p,ex,ex31,ex148
       integer il,ib,ie1,ie2,ie3,ie4,ie5,ie6,ie7,ie8,ii
@@ -85,6 +85,7 @@ c *** Random seed ***
       idum=-1314
 c *** Set Sun position / velocity ***
       xsun=-8.0d0
+      ysun=0.0d0
       zsun=0.02d0
       vlsr=1.1d0*VUKMS
 c *** vlsr=1.1d0*VUKMS=228.14 km/s ***
@@ -254,6 +255,7 @@ c         write(15,16) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
          nparts=nparts+1
          if (q.eq.0) then
             xsun=xsun/100.0d0
+            ysun=ysun/100.0d0
             zsun=zsun/100.0d0
          endif
 c         m_p=m_p*1.0e11/6.8d0
@@ -277,11 +279,13 @@ c         write(6,*) z
             z=30000.0d0
          endif 
          z_p=z_p-zsun
+         y_p=y_p-ysun
          x_p=x_p-xsun
-         rp=dsqrt((x_p+xsun)**2+y_p**2)
-         vr_p=((vx_p*(x_p+xsun)+vy_p*y_p+vz_p*(z_p+zsun))/rp)*VUKMS
-         vrot_p=(-1.0d0*((x_p+xsun)*vy_p-y_p*vx_p)/rp)*VUKMS
-         rp=dsqrt((x_p+xsun)**2+y_p**2+(z_p+zsun)**2)
+         rp=dsqrt((x_p+xsun)**2+(y_p+ysun)**2)
+         vr_p=((vx_p*(x_p+xsun)+vy_p*(y_p+ysun)+vz_p
+     &        *(z_p+zsun))/rp)*VUKMS
+         vrot_p=(-1.0d0*((x_p+xsun)*vy_p-(y_p+ysun)*vx_p)/rp)*VUKMS
+         rp=dsqrt((x_p+xsun)**2+(y_p+ysun)**2+(z_p+zsun)**2)
          d_p=dsqrt(x_p**2+y_p**2+z_p**2)
 c         write(6,*) 'dp=',d_p,'rp=',rp,xsun,zsun
          dmod=5.0d0*(dlog10(d_p*100000.0d0)-1.0d0)
@@ -605,25 +609,29 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
      &                             vl_p,vb_p)
                               od_p=1.0d0/(Tao(3)*1.0e3)
                            endif
-                           rop=dsqrt((xo_p+xsun)**2+yo_p**2)*LUKPC
+                           rop=dsqrt((xo_p+xsun)**2+(yo_p+ysun)**2)*LUKPC
                            xo_p=xo_p*LUKPC
                            yo_p=yo_p*LUKPC
                            zo_p=zo_p*LUKPC
                            xsun=xsun*LUKPC
+                           ysun=ysun*LUKPC
                            zsun=zsun*LUKPC
                            if (error.lt.2) then
                               od_p=1.0d0/(ao(3)*1.0e3)
-                              vro_p=((vxo_p*(xo_p+xsun)+vyo_p*yo_p)/rop)
-                              vroto_p=(-1.0d0*((xo_p+xsun)*vyo_p-yo_p
+                              vro_p=((vxo_p*(xo_p+xsun)
+     &                             +vyo_p*(yo_p+ysun))/rop)
+                              vroto_p=(-1.0d0*((xo_p+xsun)*vyo_p
+     &                             -(yo_p+ysun)
      &                             *vxo_p)/rop)
                               vrots=(-1.0d0*(xo_p*vyo_p-yo_p*vxo_p)/
      &                             (od_p/100.0d0))
-                              rop=dsqrt((xo_p+xsun)**2+yo_p**2
+                              rop=dsqrt((xo_p+xsun)**2+(yo_p+ysun)**2
      &                             +(zo_p+zsun)**2)
                               vlo_p=vrots/(4.74d0*(od_p*1000.0d0))
                               vbo_p=vzo_p*VUKMS/(4.74d0*(od_p*1000.0d0))
                            endif
                            xsun=xsun/LUKPC
+                           ysun=ysun/LUKPC
                            zsun=zsun/LUKPC
                            x_p=x_p/LUKPC
                            y_p=y_p/LUKPC
