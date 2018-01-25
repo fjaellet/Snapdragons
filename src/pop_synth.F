@@ -615,7 +615,8 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
      &                             vl_p,vb_p)
                               od_p=1.0d0/(Tao(3)*1.0e3)
                            endif
-                           rop=dsqrt((xo_p+xsun)**2+(yo_p+ysun)**2)*LUKPC
+                           rop=dsqrt((xo_p+xsun)**2
+     &                          +(yo_p+ysun)**2)*LUKPC
                            xo_p=xo_p*LUKPC
                            yo_p=yo_p*LUKPC
                            zo_p=zo_p*LUKPC
