@@ -84,6 +84,7 @@ c *** Choose IMF (Salpeter=1, Kroupa=2) ***
 c *** Random seed ***
       idum=-1314
 c *** Set Sun position / velocity ***
+c *** Should be negative along x-axis (Will be fixed to be anywhere at some point)
       xsun=-8.0d0
       ysun=0.0d0
       zsun=0.02d0
@@ -262,9 +263,14 @@ c         m_p=m_p*1.0e11/6.8d0
          x_p=x_p/100.0d0 
          y_p=y_p/100.0d0
          z_p=z_p/100.0d0
-         vx_p=(vx_p+usun)/VUKMS
-         vy_p=(vy_p+vlsr+vsun)/VUKMS
-         vz_p=(vz_p+wsun)/VUKMS
+c For input velocities w.r.t Sun
+c         vx_p=(vx_p+usun)/VUKMS
+c         vy_p=(vy_p+vlsr+vsun)/VUKMS
+c         vz_p=(vz_p+wsun)/VUKMS
+c For input velocities w.r.t GC
+         vx_p=vx_p/VUKMS
+         vy_p=vy_p/VUKMS
+         vz_p=vz_p/VUKMS
 c         vy_p=vy_p+vlsr
 c *** If metallicity in [M/H] (dex) - for marigo, should change ***
 c         z=0.019*(10.**z)
