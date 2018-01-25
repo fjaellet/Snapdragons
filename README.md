@@ -101,7 +101,7 @@ Which are:
 39 metallicity z*10^6
 40 Age (log10years)
 41 observed distance
-42 observed x    	
+42 observed x		
 43 observed y 
 44 observed z 
 45 observed vx 

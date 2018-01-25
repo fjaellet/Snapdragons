@@ -129,7 +129,7 @@ c *** Read extinction arrays ***
             do i=0,16777215
                read(51,end=156) datS(i)
             enddo
- 156        dl=(2.0d0*M_PI)/4095.0d0 
+ 156                dl=(2.0d0*M_PI)/4095.0d0 
             db=M_PI/4095.0d0   
             write(6,*) 'Schlegel extinction array Read'
          else
@@ -140,7 +140,7 @@ c *** Read extinction arrays ***
                read(51,END=157) datS(i)
             enddo
              write(6,*) '2D analytical extinction array Read'
- 157         dl=(2.0d0*M_PI)/1023.0d0 
+ 157                  dl=(2.0d0*M_PI)/1023.0d0 
              db=M_PI/1023.0d0   
          endif
          close(51)
@@ -148,7 +148,7 @@ c *** Read extinction arrays ***
          do i=0,104857599
             read(51,END=158) dat3(i)
          enddo
- 158     close(51)
+ 158          close(51)
          write(6,*) '3D factor array Read'
          write(6,*) 'Extinction running'
 c     0<l<2*pi 
@@ -192,11 +192,11 @@ c *** Read data ***
                k=k+1
             endif
          enddo 
-  600    close(20)
+ 600         close(20)
          IsoStart(i)=j
       enddo
       write(6,*) 'Isochrones Read'
- 1940 format(17(1pE13.5),I10,3(1pE13.5))
+ 1940  format(17(1pE13.5),I10,3(1pE13.5))
 c *** Open files to read & write ***
 c *** open output file (binary or ASCII) ***
       if (Binary.eq.0) then
@@ -221,7 +221,7 @@ c 2031 format(13(1pE13.5))
 c *** For simpler file ***
       open(30,file='ini/input.dat'
      &     ,status='unknown')
- 2030 format(9(1pE13.5))
+ 2030  format(9(1pE13.5))
 c      open(30,file='ini/d001000',status='unknown')
 c 2030 format(7(1pE13.5),I10,2(1pE13.5))
       np=MN
@@ -444,7 +444,7 @@ c *** Interpolate ***
 c *** CHANGED ***
 c               goto 601
 c *** Calc number to generate ***
-  667          if (xIMF.eq.1) then 
+ 667                     if (xIMF.eq.1) then 
                   Nsf=((Afac/(-1.35d0))*(MiMax**(-1.35d0)-Milb
      &                 **(-1.35d0)))
                   Ns=int(Nsf)
@@ -729,7 +729,7 @@ c *** END CUSTOM SELECTIONS ***
                         goto 602
                      endif
                   enddo
-  602             sumgen=sumgen+mgen
+ 602                           sumgen=sumgen+mgen
                   mtemp=mtemp+mgen
                   ngen=ngen+1
                enddo
@@ -737,7 +737,7 @@ c *** END CUSTOM SELECTIONS ***
             endif
          enddo
 c *** Percentage done ***
-  601    if (int((float(q)/float(10000000))*100.0d0).gt.per2) then
+ 601         if (int((float(q)/float(10000000))*100.0d0).gt.per2) then
             per2=int((float(q)/float(10000000))*100.0d0)
 c            if (inputdata.lt.2) then
                write(6,'(1I3,$)') per2
@@ -745,12 +745,12 @@ c            endif
          endif
       enddo 
 c     72   
-  102 format(74(1pE13.5))
-  103 format(49(1pE13.5))
-  104 format(17(1pE13.5)) 
+ 102   format(74(1pE13.5))
+ 103    format(49(1pE13.5))
+ 104     format(17(1pE13.5)) 
       close(11)
 c *** Finish ***
-  603 write(6,*) '100 % complete'
+ 603   write(6,*) '100 % complete'
       write(6,*) 'You generated',sumgen,' solar masses of stars!'
       write(6,*) 'You needed',mtotalneed,' solar masses of stars!'
       if (sumgen.gt.mtotalneed) then
