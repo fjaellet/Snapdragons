@@ -4,15 +4,16 @@ Snapdragons population synthesis &amp; mock survey data generation code
 Input: N-body model.
 Output: Stellar data.
 
-Compile with:
+The code now has a Makefile in the main directory with source code in src.
+For anyone unfamiliar, to compile just type 'make' in the main directory
 
-gfortran PopSynth.F Gaia-errors.F TGAS-errors.F -o Snapdragons
+--------
 
 (If you want to increase MN to include more than ~9125000 N-body particle model you may need to add -mcmodel=medium after TGAS-errors.F)
 
 (Note that the extinction maps are also available on https://drive.google.com/open?id=0B0xQIGDvKqHbbFNSRl9JVm90b2s. Some people have reported problems downloading them from git-lfs)
 
-Input in PopSynth.F is
+Input in pop_synth.F is
 
 open(30,file='ini/input.dat',status='unknown')
 
@@ -34,7 +35,7 @@ c *** Minimum magnitude necessary ***
 
       write(6,*) 'Limited to V<‘,ChosenLim
 
-The Attached PopSynth.F has the full range of outputs turned on, but you can adjust that by taking out fields from the below 
+The Attached pop_synth.F has the full range of outputs turned on, but you can adjust that by taking out fields from the below 
 print statement, and editing the 102 format label to show correct length.
 
 Let me know if you can’t get it to work, or have any questions about what’s going on in there…
