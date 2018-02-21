@@ -630,12 +630,16 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
                               vroto_p=(-1.0d0*((xo_p+xsun)*vyo_p
      &                             -(yo_p+ysun)
      &                             *vxo_p)/rop)
-                              vrots=(-1.0d0*(xo_p*vyo_p-yo_p*vxo_p)/
-     &                             (od_p/100.0d0))
+c                              vrots=(-1.0d0*(xo_p*vyo_p-yo_p*vxo_p)/
+c     &                             (od_p/100.0d0))
                               rop=dsqrt((xo_p+xsun)**2+(yo_p+ysun)**2
      &                             +(zo_p+zsun)**2)
-                              vlo_p=vrots/(4.74d0*(od_p*1000.0d0))
-                              vbo_p=vzo_p*VUKMS/(4.74d0*(od_p*1000.0d0))
+                              vlo_p=-Uo*dsin(lo_p)+Vo*dcos(lo_p)
+                              vbo_p=-Uo*dcos(lo_p)*dsin(bo_p)
+     &                              -Vo*dsin(lo_p)*dsin(bo_p)
+     &                              +Wo*dcos(bo_p)
+c                              vlo_p=vrots/(4.74d0*(od_p*1000.0d0))
+c                              vbo_p=vzo_p*VUKMS/(4.74d0*(od_p*1000.0d0))
                            endif
                            xsun=xsun/LUKPC
                            ysun=ysun/LUKPC
