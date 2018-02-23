@@ -16,7 +16,7 @@
       double precision MiMax,Afac,Afac1,z,PAge,vgen,igen,avgen,aigen
       double precision ugen,bgen,rgen,jgen,hgen,kgen,Afac2
       double precision augen,abgen,argen,ajgen,ahgen,akgen
-      double precision exU,exB,exR,exJ,exH,exK
+      double precision exU,exB,exR,exJ,exH,exK,logg,Teff
       double precision ChosenLim,frac,Vigen,dummy,dmod,mag2,rd,circ
       double precision Age(0:MN-1),logL_Lo(0:MN-1),logG(0:MN-1),
      &     Mi(0:MN-1),Mc(0:MN-1),logT(0:MN-1),
@@ -64,7 +64,7 @@ c *** USER OPTIONS ***
 c *** Output to binary (1) or ASCII (0)? ***
       Binary=0
 c *** Minimum magnitude necessary ***
-      ChosenLim=11.0d0
+      ChosenLim=18.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c *** Add Gaia errors? 
 c *** 0=No errors
@@ -74,7 +74,7 @@ c *** 3=TGAS Hipparcos stars only
       error=1
 c *** mission length in months, 60=5 years ***
 c *** 22 months for Gaia DR2 (testing ongoing) ***
-      month=60.0d0
+      month=22.0d0
 c *** Add Milky Way Extinction (1=yes) ***
       EXTINCT=1
 c *** Extintion map (1=Schlegel, 0=2d analytic) ***
@@ -521,7 +521,7 @@ c *** Calculate stellar mass ***
                   endif
                   do l=lbegin,lend
                      if (mgen.lt.Mi(l)) then
-c *** Interpolate for magnitudes ***
+c *** Interpolate for magnitudes, log(g) and T_eff ***
                         frac=(mgen-Mi(l-1))/(Mi(l)-Mi(l-1))
                         avgen=frac*(VMV(l)-VMV(l-1))+VMV(l-1)
                         aigen=frac*(VMI(l)-VMI(l-1))+VMI(l-1)
@@ -531,6 +531,8 @@ c *** Interpolate for magnitudes ***
                         ajgen=frac*(VMJ(l)-VMJ(l-1))+VMJ(l-1)
                         ahgen=frac*(VMH(l)-VMH(l-1))+VMH(l-1)
                         akgen=frac*(VMK(l)-VMK(l-1))+VMK(l-1)
+                        logg=frac*(logG(l)-logG(l-1))+logG(l-1)
+                        Teff=10**(frac*(logT(l)-logT(l-1))+logT(l-1))
 c *** Add stellar extinction (and absolute -> apparent) ***
                         vgen=avgen+dmod+ex31
 c *** If satisfies criteria *** 
@@ -681,7 +683,7 @@ c *** Ascii ***
      &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
      &                             ,vl_p,vb_p,vlo_p,vbo_p
      &                             ,ugen,bgen,rgen,jgen,hgen,kgen
-     &                             ,Ue,Ve,We
+     &                             ,Ue,Ve,We,logg,Teff
 c *** Binary ***
                              else
                                 if ((q.eq.0).and.(m.eq.0)) then
@@ -750,7 +752,7 @@ c            endif
          endif
       enddo 
 c     72   
- 102   format(74(1pE13.5))
+ 102   format(76(1pE13.5))
  103    format(49(1pE13.5))
  104     format(17(1pE13.5)) 
       close(11)
