@@ -686,7 +686,7 @@ c *** Ascii ***
      &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
      &                             ,vl_p,vb_p,vlo_p,vbo_p
      &                             ,ugen,bgen,rgen,jgen,hgen,kgen
-     &                             ,Ue,Ve,We,surface_gravity,Teff,apo(1)
+     &                             ,Ue,Ve,We,Teff,surface_gravity,apo(1)
      &                             ,apo(2),ape(1),ape(2)
 c *** Binary ***
                              else
@@ -704,7 +704,8 @@ c *** Binary ***
      &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
      &                             ,vl_p,vb_p,vlo_p,vbo_p
      &                             ,ugen,bgen,rgen,jgen,hgen,kgen
-     &                             ,Ue,Ve,We
+     &                             ,Ue,Ve,We,Teff,surface_gravity,apo(1)
+     &                             ,apo(2),ape(1),ape(2)
                               endif
                            endif
                            if (error.ge.2) then
