@@ -560,7 +560,9 @@ c *** Write stellar output ***
                            wh=vz_p*VUKMS-wsun
                            call UVWH_to_equatorials(uh,vh,wh,a)
                            jflag=-1 
-                           do j=1,4
+                           ap(1)=Teff
+                           ap(2)=logg
+                           do j=3,4
                               ap(j)=0.0d0
                            enddo
                            do j=3,5
@@ -683,7 +685,8 @@ c *** Ascii ***
      &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
      &                             ,vl_p,vb_p,vlo_p,vbo_p
      &                             ,ugen,bgen,rgen,jgen,hgen,kgen
-     &                             ,Ue,Ve,We,logg,Teff
+     &                             ,Ue,Ve,We,logg,Teff,apo(1),apo(2),
+     &                             ape(1),ape(2)
 c *** Binary ***
                              else
                                 if ((q.eq.0).and.(m.eq.0)) then
@@ -752,7 +755,7 @@ c            endif
          endif
       enddo 
 c     72   
- 102   format(76(1pE13.5))
+ 102   format(80(1pE13.5))
  103    format(49(1pE13.5))
  104     format(17(1pE13.5)) 
       close(11)
