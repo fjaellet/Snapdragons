@@ -1,5 +1,8 @@
 # Snapdragons
 Snapdragons population synthesis &amp; mock survey data generation code 
+Please cite the Snapdragons paper, if you use it for publications
+Hunt et al. 2015, MNRAS, 450, 2132
+http://adsabs.harvard.edu/abs/2015MNRAS.450.2132H
 
 Input: N-body model.
 Output: Stellar data.
