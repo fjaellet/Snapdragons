@@ -16,7 +16,7 @@
       double precision MiMax,Afac,Afac1,z,PAge,vgen,igen,avgen,aigen
       double precision ugen,bgen,rgen,jgen,hgen,kgen,Afac2
       double precision augen,abgen,argen,ajgen,ahgen,akgen
-      double precision exU,exB,exR,exJ,exH,exK,logg,Teff
+      double precision exU,exB,exR,exJ,exH,exK,surface_gravity,Teff
       double precision ChosenLim,frac,Vigen,dummy,dmod,mag2,rd,circ
       double precision Age(0:MN-1),logL_Lo(0:MN-1),logG(0:MN-1),
      &     Mi(0:MN-1),Mc(0:MN-1),logT(0:MN-1),
@@ -531,7 +531,8 @@ c *** Interpolate for magnitudes, log(g) and T_eff ***
                         ajgen=frac*(VMJ(l)-VMJ(l-1))+VMJ(l-1)
                         ahgen=frac*(VMH(l)-VMH(l-1))+VMH(l-1)
                         akgen=frac*(VMK(l)-VMK(l-1))+VMK(l-1)
-                        logg=frac*(logG(l)-logG(l-1))+logG(l-1)
+                        surface_gravity=
+     &                       frac*(logG(l)-logG(l-1))+logG(l-1)
                         Teff=10**(frac*(logT(l)-logT(l-1))+logT(l-1))
 c *** Add stellar extinction (and absolute -> apparent) ***
                         vgen=avgen+dmod+ex31
@@ -561,7 +562,7 @@ c *** Write stellar output ***
                            call UVWH_to_equatorials(uh,vh,wh,a)
                            jflag=-1 
                            ap(1)=Teff
-                           ap(2)=logg
+                           ap(2)=surface_gravity
                            do j=3,4
                               ap(j)=0.0d0
                            enddo
@@ -685,8 +686,8 @@ c *** Ascii ***
      &                             ,makmso,mdkmso,l_p,b_p,lo_p,bo_p
      &                             ,vl_p,vb_p,vlo_p,vbo_p
      &                             ,ugen,bgen,rgen,jgen,hgen,kgen
-     &                             ,Ue,Ve,We,logg,Teff,apo(1),apo(2),
-     &                             ape(1),ape(2)
+     &                             ,Ue,Ve,We,surface_gravity,Teff,apo(1)
+     &                             ,apo(2),ape(1),ape(2)
 c *** Binary ***
                              else
                                 if ((q.eq.0).and.(m.eq.0)) then
