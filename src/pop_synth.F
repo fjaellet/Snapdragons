@@ -13,11 +13,13 @@
      &     ,IsoStart(0:MNiso-1),ageindex,np,m,per2,lbegin,lend,ngen
       integer EXTINCT,Schlegel,dummyint,nparts,xIMF
      &     ,Ns1,Ns2,Nsf1,Nsf2
+      integer npreport
       double precision MiMax,Afac,Afac1,z,PAge,vgen,igen,avgen,aigen
       double precision ugen,bgen,rgen,jgen,hgen,kgen,Afac2
       double precision augen,abgen,argen,ajgen,ahgen,akgen
       double precision exU,exB,exR,exJ,exH,exK,surface_gravity,Teff
       double precision ChosenLim,frac,Vigen,dummy,dmod,mag2,rd,circ
+      double precision fsample
       double precision Age(0:MN-1),logL_Lo(0:MN-1),logG(0:MN-1),
      &     Mi(0:MN-1),Mc(0:MN-1),logT(0:MN-1),
      &     C_O(0:MN-1),VMU(0:MN-1),
@@ -64,8 +66,13 @@ c *** USER OPTIONS ***
 c *** Output to binary (1) or ASCII (0)? ***
       Binary=0
 c *** Minimum magnitude necessary ***
-      ChosenLim=18.0d0
+      ChosenLim=13.0d0
       write(6,*) 'Limited to V<',ChosenLim
+c fraction of output
+      fsample=1.0
+      write(6,*) ' Output of sample with a fraction of ',fsample
+c every npreport, output number of particles processed
+      npreport=10000
 c *** Add Gaia errors? 
 c *** 0=No errors
 c *** 1=Gaia - Use 'Months' to set intermediate data releases
@@ -674,6 +681,7 @@ c **** HERE YOU CAN ADD CUSTOM REQUIREMENTS FOR OUTPUTS ****
 c                           if ((od_p.gt.0.0d0).and.
 c     &                          (od_p.lt.40.0d0)) then
 c                           if (GRVS.lt.16.2d0) then
+                           if(ran1(idum).lt.real(fsample)) then
                            lo_p=(lo_p*180.0d0)/M_PI
                            bo_p=(bo_p*180.0d0)/M_PI
 c                           if (lo_p.gt.175.0d0) then
@@ -749,6 +757,7 @@ c                           endif
 c *** END CUSTOM SELECTIONS ***
                            d_p=d_p/LUKPC
                         endif
+                        endif
                         goto 602
                      endif
                   enddo
@@ -765,6 +774,10 @@ c *** Percentage done ***
 c            if (inputdata.lt.2) then
                write(6,'(1I3,$)') per2
 c            endif
+         endif
+         if(mod(q+1,npreport).eq.0) then
+           write(6,*) q+1,' particles processed.'
+     &        ,Gensel,' stars generated'
          endif
       enddo 
 c     72   
