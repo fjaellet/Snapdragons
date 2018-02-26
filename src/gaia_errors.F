@@ -9,7 +9,10 @@ c Contact: Merce Romero-Gomez, Josep Manel Carrasco
 c
 c ---------------------------------------------------------------------
 
-c Updated: January 2013
+c Original: January 2013
+c Modified by D. Kawata (MSSL, UCL): 24 January 2018
+c added BP RP photmetry output
+
 
 c Inputs:
 c ---------
@@ -35,6 +38,9 @@ c     		jflag=1, errors computed from mean geometrical factors (see website)
 c     		jflag=-1,errors computed considering the scanning law of the satellite 
 c             		(the geometrical factors are then computed from the ecliptic
 c             		latitude and the number transits)
+c     errors:
+c         errors=1: Gaia errors   
+c         errors=4: Gaia DR2 errors
 
 c     V: V apparent magnitude 
 c     VI: observed (V-I) colour index (affected by extinction), in magnitudes
@@ -82,12 +88,19 @@ c   Photometric data affected by errors (G, G_BP, G_RP, G_RVS)
 c     p(i): Photometric actual values for the star (no affected by errors)
 c         p(1): G magnitude (units: magnitudes) 
 c         p(2): G_BP-G_RP   (units: magnitudes) 
+c DK added G_BP and G_RP output
+c         p(3): G_BP (units: magnitudes) 
+c         p(4): G_RP   (units: magnitudes) 
 c     po(i): Photometric values of the star affected by Gaia errors
 c         po(1): Observed G magnitude (units: magnitudes) 
 c         po(2): Observed G_BP-G_RP   (units: magnitudes) 
+c         po(3): Observed G_BP (units: magnitudes) 
+c         po(4): Observed G_RP   (units: magnitudes) 
 c     pe(i): Gaia standard deviation (errors, 1-sigma)
 c         pe(1): Standard deviation in G magnitude (units: magnitudes) 
 c         pe(2): Standard deviation in G_BP-G_RP   (units: magnitudes) 
+c         pe(3): Standard deviation in G_BP (units: magnitudes) 
+c         pe(4): Standard deviation in G_RP   (units: magnitudes) 
 
 c   Atmospheric parameters data affected by errors: 
 c     apo(i): Atmospheric parameters of the star affected by Gaia errors
@@ -104,10 +117,10 @@ c         ap(4): Standard deviation in Absorption A0 (Av~A0, see Bailer-Jones et
 
 
 c **********************************************************************
-        subroutine Gaia_errors(month,CAfactor,jflag,V,VI,a,ao,ae,p,po,pe
-     &             ,ap,apo,ape,Llavor)
+        subroutine Gaia_errors(errors,month,CAfactor,jflag,V,VI,a,ao,ae
+     &             ,p,po,pe,ap,apo,ape,Llavor)
         implicit real*8 (a-h,o-z)
-        dimension a(6),ao(6),ae(6),p(2),po(2),pe(2),g(5)
+        dimension a(6),ao(6),ae(6),p(4),po(4),pe(4),g(5)
         dimension ap(4),apo(4),ape(4)
         dimension xvi(11),xavr(11),xbvr(11)
 c        dimension xsb(20),xNOBS(20),xga(20),xgd(20),xgpi(20),xgmua(20),
@@ -121,8 +134,8 @@ c     &       xsb(20),xNOBS(20),xga(20),xgd(20),xgpi(20),xgmua(20),
 c     &       xgmud(20)
 c        double precision V,VI,empi,gmeana,gmeand,gmeanmua,gmeanmud,
 c     &        gmeanpi,sbeta
-c        integer jflag,i,j
-
+        integer jflag,i,j,errors
+        
         double precision month,CAfactor
         real*8 gasdev
         character*10 xchar
@@ -175,7 +188,7 @@ c     &              ,gmeanmua,gmeanmud
 
 c Get Gaia errors in parallax,magnitudes and Vr 
 
-        call ErrorsPiMag(factorL,CAfactor,v,vi,p,pe,empi)
+        call ErrorsPiMag(errors,factorL,CAfactor,v,vi,p,pe,empi)
         call ErrorsVr(v,vi,ae(6),GRVS)
 
 c       Output errors on parallax and proper motion will be in mas
@@ -186,8 +199,8 @@ c       Mean errors (from mean g-geometrical factor)
           ae(3)=empi
           ae(1)=gmeana*ae(3)
           ae(2)=gmeand*ae(3)
-          ae(4)=gmeanmua*ae(3)
-          ae(5)=gmeanmud*ae(3)
+          ae(4)=gmeanmua*ae(3)*(factorL**2)
+          ae(5)=gmeanmud*ae(3)*(factorL**2)
         endif
 
 c       Errors depending on the scanning law 
@@ -211,6 +224,15 @@ c          ae(i)=xnob*g(i)*empi
             ae(i)=g(i)*empi
 c            write(6,*) ae(4),ae(5)
           enddo 
+
+c DK added parallax and proper motion error dependence of month
+c Anthony Brown Lund talk http://www.astro.lu.se/gaia2017/slides/Brown.pdf
+c parallax improve t^-0.5
+c proper motion improve t^-1.5
+c empi including (xfactorL)
+          ae(4)=ae(4)*(factorL**2)
+          ae(5)=ae(5)*(factorL**2)
+
         endif
 
 c       Computation of the errors in the atmospheric parameters
@@ -264,7 +286,7 @@ c        a(4)=a(4)/mas
 c        ao(4)=ao(4)/mas
 c        ae(4)=ae(4)/mas
 c       Computation of the observed photometric quantities 
-        do i=1,2
+        do i=1,4
         po(i)=gasdev(p(i),pe(i),Llavor)
         enddo
 
@@ -334,16 +356,20 @@ c     pe(2)=sigBPRP         uncertainty in G_BP-G_RP colour (in mag units)
 c     ae(3)=empi            uncertainty in parallax (in microarcsec units)
 
 c------------------------------------------------------------------
-      subroutine ErrorsPiMag(factorL,CAfactor,v,vi,p,pe,empi)
+      subroutine ErrorsPiMag(errors,factorL,CAfactor,v,vi,p,pe,empi)
 
       implicit real*8 (a-h,o-z)
-      dimension p(2),pe(2)
+      integer errors
+      dimension p(4),pe(4)
 
 
 c---- Gaia photometry,
 
       p(2)=-0.0660d0+1.2061d0*vi-0.0614d0*vi*vi+0.0041d0*vi**3
       p(1)=V-0.0257d0-0.0924d0*vi-0.1623d0*vi*vi+0.0090d0*vi**3 
+c BR and PR
+      p(3)=V-(0.0643d0-0.3266d0*VI+0.0887d0*(VI**2)-0.0050d0*(VI**3))
+      p(4)=V-(-0.0017d0+0.8794d0*VI+0.0273d0*(VI**2)-0.0008d0*(VI**3))
       if(p(1).gt.20.) then
          empi=999999.999
          pe(1)=99.999
@@ -357,7 +383,14 @@ c Astrometric Error
 c After Comissioning Nov 2014
       z=MAX(10**(0.4*(12.0-15.0)), 10**(0.4*(p(1)-15.0)))
       empi=dsqrt(-1.631+680.766*z+32.732*z**2)*(0.986+(1.0-0.986)*vi)
+
       empi=empi*factorL*CAfactor
+      if(errors.eq.4) then
+c DR2
+        if(p(1).lt.15.0d0.and.empi.lt.40.0d0) then
+          empi=40.0d0
+        endif
+      endif
 
 c Photometric Errors
       pe(1)=0.001*dsqrt(0.04895*z**2+1.8633*z+0.0001985)
@@ -370,12 +403,14 @@ c Photometric Errors
       c= 0.000262*vi**3+0.060769*vi**2-0.205807*vi-1.866968
       sigBP=0.001*dsqrt((10.**a)*(z**2)+(10.**b)*z+10.**c)
       sigBP=sigBP/dsqrt(70.d0) * factorL
+      pe(3)=sigBP
       
       a=-0.007597*vi**3+0.114126*vi**2-0.636628*vi+1.615927
       b=-0.003803*vi**3+0.057112*vi**2-0.318499*vi+1.783906
       c=-0.001923*vi**3+0.027352*vi**2-0.091569*vi-3.042268
       sigRP=0.001*dsqrt((10.**a)*(z**2)+(10.**b)*z+10.**c)
       sigRP=sigRP/dsqrt(70.d0)* factorL
+      pe(4)=sigRP
 
 c     We assume there is no correlation among colours
       pe(2)=dsqrt(sigBP**2+sigRP**2) 

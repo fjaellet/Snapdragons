@@ -36,7 +36,7 @@
       double precision dl3,db3,dd3,CAfactor
       double precision leS(0:MNSc-1),beS(0:MNSc-1),le3(0:MN3D-1),
      &     be3(0:MN3D-1),de3(0:99),datS(0:16777215),dat3(0:104857599)
-      double precision l_p,b_p,a(6),ao(6),ae(6),p(2),po(2),pe(2), 
+      double precision l_p,b_p,a(6),ao(6),ae(6),p(4),po(4),pe(4), 
      &     ap(4),apo(4),ape(4),Tao(5),Tae(5),Ta(5)
       double precision M_PI,t0,uh,vh,wh,makms,mdkms,makmso,mdkmso
       parameter (M_PI=4.0d0*datan(1.0d0))
@@ -71,10 +71,24 @@ c *** 0=No errors
 c *** 1=Gaia - Use 'Months' to set intermediate data releases
 c *** 2=TGAS Tycho stars
 c *** 3=TGAS Hipparcos stars only
-      error=1
+c *** 4=DR2, please set month=22, and jflag=1
+      error=4
 c *** mission length in months, 60=5 years ***
 c *** 22 months for Gaia DR2 (testing ongoing) ***
       month=22.0d0
+c Introduce Gaia errors
+c        jflag=-1                          !weighted errors
+      jflag= 1                          !mean errors after commissioning, but D
+c *** Calibration astrometric factor:
+c *** CAfactor=1.0d0 means no calibration errors added ***
+c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
+      CAfactor=1.2d0
+c *** for DR2
+      if(error.eq.4) then
+        month=22.0
+        jflag=1
+        CAfactor=1.0d0
+      endif
 c *** Add Milky Way Extinction (1=yes) ***
       EXTINCT=1
 c *** Extintion map (1=Schlegel, 0=2d analytic) ***
@@ -109,6 +123,8 @@ c *** END USER OPTIONS ***
          write(6,*) 'TGAS error added (Tycho stars)'
       else if (error.eq.3) then 
          write(6,*) 'TGAS error added (Hipparcos stars)'
+      else if (error.eq.4) then 
+         write(6,*) 'DR2 error added'
       endif
 c *** TEMP particle ***
       open(20,FILE='ini/UBV/IsoNo.txt', STATUS='OLD')
@@ -560,7 +576,6 @@ c *** Write stellar output ***
                            vh=vy_p*VUKMS-vlsr-vsun
                            wh=vz_p*VUKMS-wsun
                            call UVWH_to_equatorials(uh,vh,wh,a)
-                           jflag=-1 
                            ap(1)=Teff
                            ap(2)=surface_gravity
                            do j=3,4
@@ -571,12 +586,8 @@ c *** Write stellar output ***
                            enddo
 c *** Add Gaia errors ***
                            if (error.ne.0) then
-c *** Calibration astrometric factor:
-c *** CAfactor=1.0d0 means no calibration errors added ***
-c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
-                              CAfactor=1.2d0
-                              if (error.eq.1) then
-                                 call Gaia_errors(month,CAfactor,jflag
+                              if (error.eq.1.or.error.eq.4) then
+                                 call Gaia_errors(error,month,CAfactor,jflag
      &                                ,Vgen,VIgen,a,ao,ae,p,po,pe,ap,apo
      &                                ,ape,idum)  
                               else if (error.eq.2) then
@@ -598,7 +609,7 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
                            do j=1,5
                               ae(j)=ae(j)/1000.0d0
                            enddo
-                           if (error.ge.2) then
+                           if (error.ge.2.and.error.le.3) then
                               do j=3,5
                                  Ta(j)=Ta(j)/1000.0d0
                                  Tao(j)=Tao(j)/1000.0d0
@@ -607,14 +618,14 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
                                  Tae(j)=Tae(j)/1000.0d0
                               enddo
                            endif
-                           if (error.lt.2) then
+                           if (error.lt.2.or.error.eq.4) then
                               call coord(ao,ae,xo_p,yo_p,zo_p,Uo,Vo,Wo
      &                             ,Ue,Ve,We,lo_p,bo_p,vlo_p,vbo_p)
                               vxo_p=(Uo+usun)
                               vyo_p=(Vo+vsun+VLSR)
                               vzo_p=(Wo+wsun)
                            endif
-                           if (error.ge.2) then
+                           if (error.ge.2.and.error.le.3) then
                               call Tcoord(Tao,Ta,xo_p,yo_p,zo_p,
      &                             lo_p,bo_p,vlo_p,vbo_p,l_p,b_p,
      &                             vl_p,vb_p)
@@ -628,7 +639,7 @@ c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
                            xsun=xsun*LUKPC
                            ysun=ysun*LUKPC
                            zsun=zsun*LUKPC
-                           if (error.lt.2) then
+                           if (error.lt.2.or.error.eq.4) then
                               od_p=1.0d0/(ao(3)*1.0e3)
                               vro_p=((vxo_p*(xo_p+xsun)
      &                             +vyo_p*(yo_p+ysun))/rop)
@@ -669,7 +680,7 @@ c                           if (lo_p.gt.175.0d0) then
 c                           if (lo_p.lt.185.0d0) then
 c                           if (bo_p.gt.-5.0d0) then
 c                           if (bo_p.lt.5.0d0) then
-                           if (error.lt.2) then
+                           if (error.lt.2.or.error.eq.4) then
                               if (Binary.eq.0) then
 c *** Ascii ***
                                 if ((q.eq.0).and.(m.eq.0)) then
@@ -708,7 +719,7 @@ c *** Binary ***
      &                             ,apo(2),ape(1),ape(2)
                               endif
                            endif
-                           if (error.ge.2) then
+                           if (error.ge.2.and.error.le.3) then
 c                              if (od_p.gt.0.0d0) then
 c                                 if (od_p.lt.4.5d0) then
                               if ((q.eq.0).and.(m.eq.0)) then
