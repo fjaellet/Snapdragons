@@ -63,13 +63,13 @@ c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar) ***
 c *** Note metallciity in z not [Fe/H]
 
 c *** USER OPTIONS ***
-c *** Output to binary (1) or ASCII (0)? ***
-      Binary=0
+c *** Output to binary (1), binary compact for py/snapdragons2fits.py (2) or ASCII (0)? ***
+      Binary=2
 c *** Minimum magnitude necessary ***
       ChosenLim=13.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c fraction of output
-      fsample=1.0
+      fsample=0.01
       write(6,*) ' Output of sample with a fraction of ',fsample
 c every npreport, output number of particles processed
       npreport=10000
@@ -226,6 +226,9 @@ c *** open output file (binary or ASCII) ***
          open(10,file='output/GeneratedStars.dat'
      &        ,status='unknown')
 c         open(15,file='ini/input.dat',status='unknown')
+      else if(Binary.eq.2) then
+        open(10,file='output/GeneratedStars_compact.bin'
+     &     ,status='unknown',form='unformatted')
       else
       open(10,file='output/GeneratedStars.bin',status='unknown'
      &     ,form='unformatted')
@@ -707,6 +710,18 @@ c *** Ascii ***
      &                             ,ugen,bgen,rgen,jgen,hgen,kgen
      &                             ,Ue,Ve,We,Teff,surface_gravity,apo(1)
      &                             ,apo(2),ape(1),ape(2)
+c *** Binary compact ***
+                             else if(Binary.eq.2) then
+                                if ((q.eq.0).and.(m.eq.0)) then
+                                   write(6,*) 
+     &                              'Writing Gaia Binary (compact)'
+                                endif
+                                write(10) (a(j),j=1,6),(ao(j),j=1,6)
+     &                           ,(ae(j),j=1,6),(p(j),j=1,4)
+     &                           ,(po(j),j=1,4)
+     &                           ,(pe(j),j=1,4),(ap(j),j=1,4)
+     &                           ,(apo(j),j=1,4),(ape(j),j=1,4)
+     &                           ,Vgen,VIgen,GRVS
 c *** Binary ***
                              else
                                 if ((q.eq.0).and.(m.eq.0)) then
@@ -797,5 +812,11 @@ c *** Finish ***
       write(6,*) 'You generated',ngen,' stars',GenSel,' selected'
       close(30)
       close(10)
+      if(Binary.eq.1) then
+        open(60,file='output/GeneratedStars-int.bin',status='unknown'
+     &     ,form='unformatted')
+        write(60) Gensel
+        close(60)
+      endif
 
       END
