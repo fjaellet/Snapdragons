@@ -69,7 +69,7 @@ c *** Minimum magnitude necessary ***
       ChosenLim=13.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c fraction of output
-      fsample=0.01
+      fsample=0.1
       write(6,*) ' Output of sample with a fraction of ',fsample
 c every npreport, output number of particles processed
       npreport=10000
@@ -673,6 +673,8 @@ c                              vbo_p=vzo_p*VUKMS/(4.74d0*(od_p*1000.0d0))
                            x_p=x_p/LUKPC
                            y_p=y_p/LUKPC
                            z_p=z_p/LUKPC
+c output only fsample data.                   
+                           if(ran1(idum).lt.real(fsample)) then
                            d_p=d_p*LUKPC
                            GRVS=Vgen-0.0119d0-1.2092d0*VIgen+0.0188d0
      &                          *(VIgen**2)+0.0005d0*(VIgen**3)
@@ -684,7 +686,6 @@ c **** HERE YOU CAN ADD CUSTOM REQUIREMENTS FOR OUTPUTS ****
 c                           if ((od_p.gt.0.0d0).and.
 c     &                          (od_p.lt.40.0d0)) then
 c                           if (GRVS.lt.16.2d0) then
-                           if(ran1(idum).lt.real(fsample)) then
                            lo_p=(lo_p*180.0d0)/M_PI
                            bo_p=(bo_p*180.0d0)/M_PI
 c                           if (lo_p.gt.175.0d0) then
@@ -771,7 +772,7 @@ c                           endif
 c                           endif
 c *** END CUSTOM SELECTIONS ***
                            d_p=d_p/LUKPC
-                        endif
+                          endif
                         endif
                         goto 602
                      endif
@@ -812,7 +813,7 @@ c *** Finish ***
       write(6,*) 'You generated',ngen,' stars',GenSel,' selected'
       close(30)
       close(10)
-      if(Binary.eq.1) then
+      if(Binary.eq.2) then
         open(60,file='output/GeneratedStars-int.bin',status='unknown'
      &     ,form='unformatted')
         write(60) Gensel
