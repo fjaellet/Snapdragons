@@ -49,6 +49,17 @@ rdata[:,6]=180.0*rdata[:,6]/np.pi
 rdata[:,7]=180.0*rdata[:,7]/np.pi
 rdata[:,12]=180.0*rdata[:,12]/np.pi
 rdata[:,13]=180.0*rdata[:,13]/np.pi
+# arcsec -> mas
+rdata[:,2]=rdata[:,2]*1000.0
+rdata[:,8]=rdata[:,8]*1000.0
+rdata[:,14]=rdata[:,14]*1000.0
+# arcsec/yr -> mas/yr
+rdata[:,3]=rdata[:,3]*1000.0
+rdata[:,4]=rdata[:,4]*1000.0
+rdata[:,9]=rdata[:,9]*1000.0
+rdata[:,10]=rdata[:,10]*1000.0
+rdata[:,15]=rdata[:,15]*1000.0
+rdata[:,16]=rdata[:,16]*1000.0
 
 # Galactic coordinates
 # True l and b
