@@ -82,17 +82,19 @@ c *** 4=DR2, please set month=22, and jflag=1
       error=4
 c *** mission length in months, 60=5 years ***
 c *** 22 months for Gaia DR2 (testing ongoing) ***
-      month=22.0d0
+      if (error.ne.4) then
+         month=60.0d0
+      endif
 c Introduce Gaia errors
-c        jflag=-1                          !weighted errors
-      jflag= 1                          !mean errors after commissioning, but D
+      jflag=-1                  !weighted errors
+c      jflag= 1                          !mean errors after commissioning, but D
 c *** Calibration astrometric factor:
 c *** CAfactor=1.0d0 means no calibration errors added ***
 c *** CAfactor=1.2d0 gives 20% calibration error (on the safe side) ***
       CAfactor=1.2d0
 c *** for DR2
       if(error.eq.4) then
-        month=22.0
+        month=22.0d0
         jflag=1
         CAfactor=1.0d0
       endif
