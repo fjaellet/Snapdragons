@@ -7,7 +7,7 @@ http://adsabs.harvard.edu/abs/2015MNRAS.450.2132H
 Input: N-body model.
 Output: Stellar data.
 
-The code now has a Makefile in the main directory with source code in src.
+The code has a Makefile in the main directory, which compiles the source code in src.
 For anyone unfamiliar, to compile just type 'make' in the main directory
 
 --------
@@ -37,6 +37,12 @@ c *** Minimum magnitude necessary ***
       ChosenLim=16.0d0
 
       write(6,*) 'Limited to V<‘,ChosenLim
+
+For differnt data releases, set the error parameter in the beginning of PopSynth.F
+Gaia end of mission -> error=1  
+Gaia TGAS -> error=2
+Gaia TGAS (Hipparcos stars only) -> error=3
+Gaia DR2 -> error=4
 
 The Attached pop_synth.F has the full range of outputs turned on, but you can adjust that by taking out fields from the below 
 print statement, and editing the 102 format label to show correct length.
