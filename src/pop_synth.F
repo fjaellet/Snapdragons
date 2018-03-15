@@ -598,8 +598,8 @@ c *** Write stellar output ***
                            enddo
 c *** Add Gaia errors ***
                            if (error.ne.0) then
-                              if (error.eq.1.or.error.eq.4) then
-                                 call Gaia_errors(error,month,CAfactor,jflag
+                             if (error.eq.1.or.error.eq.4) then
+                             call Gaia_errors(error,month,CAfactor,jflag
      &                                ,Vgen,VIgen,a,ao,ae,p,po,pe,ap,apo
      &                                ,ape,idum)  
                               else if (error.eq.2) then
