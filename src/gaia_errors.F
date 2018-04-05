@@ -276,7 +276,7 @@ c        ae(4)=ae(4)*mas
 c       and the alpha_{*} is converted to alpha
         ao(1)=ao(1)/dcos(ao(2))
         a(1)=a(1)/dcos(a(2))
-        ae(1)=a(1)/dcos(a(2))
+        ae(1)=ae(1)/dcos(a(2))
 
 c        a(4)=a(4)/dcos(a(2))
 

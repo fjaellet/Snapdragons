@@ -12,7 +12,8 @@
      &     ,IsoNo(0:MNiso-1),l,q,inputdata,GenSel,per3,Binary
      &     ,IsoStart(0:MNiso-1),ageindex,np,m,per2,lbegin,lend,ngen
       integer EXTINCT,Schlegel,dummyint,nparts,xIMF
-     &     ,Ns1,Ns2,Nsf1,Nsf2
+     &     ,Ns1,Ns2
+      double precision Nsf1,Nsf2
       integer npreport
       double precision MiMax,Afac,Afac1,z,PAge,vgen,igen,avgen,aigen
       double precision ugen,bgen,rgen,jgen,hgen,kgen,Afac2
@@ -52,8 +53,13 @@ c      parameter (M_PI=3.1415926535897932384626433d0)
       character*1 check
       character*1 hash
 
-c *** SNAPDRAGONS/PopSynth version 2.1 21/03/16 ***
-c *** Most recent addition: Kroupa IMF, not tested fully ***
+      double precision chi01,eta01,k_IMF !Edited for Kroupa IMF
+      double precision mu0, mu2, muMax, mulb !Normalized masses
+      double precision Msf1, Msf2 !Normalized masses
+      double precision x1, x2, mgen2
+
+c *** SNAPDRAGONS/PopSynth version 2.2 20/03/18 ***
+c *** Most recent addition: Kroupa IMF, fully tested ***
 
 c *** For support contact jason.hunt.11@ucl.ac.uk ***
 c *** For paper see Hunt & Kawata 2015, MNRAS, 450, 2132 ***
@@ -64,22 +70,22 @@ c *** Note metallciity in z not [Fe/H]
 
 c *** USER OPTIONS ***
 c *** Output to binary (1), binary compact for py/snapdragons2fits.py (2) or ASCII (0)? ***
-      Binary=2
+      Binary=0
 c *** Minimum magnitude necessary ***
-      ChosenLim=13.0d0
+      ChosenLim=16.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c fraction of output
-      fsample=0.1
+      fsample=1.0d0
       write(6,*) ' Output of sample with a fraction of ',fsample
 c every npreport, output number of particles processed
-      npreport=10000
+      npreport=100000
 c *** Add Gaia errors? 
 c *** 0=No errors
 c *** 1=Gaia - Use 'Months' to set intermediate data releases
 c *** 2=TGAS Tycho stars
 c *** 3=TGAS Hipparcos stars only
 c *** 4=DR2, please set month=22, and jflag=1
-      error=4
+      error=1
 c *** mission length in months, 60=5 years ***
 c *** 22 months for Gaia DR2 (testing ongoing) ***
       if (error.ne.4) then
@@ -103,7 +109,7 @@ c *** Add Milky Way Extinction (1=yes) ***
 c *** Extintion map (1=Schlegel, 0=2d analytic) ***
       Schlegel=1
 c *** Choose IMF (Salpeter=1, Kroupa=2) ***
-      xIMF=2
+      xIMF=1
 c *** Random seed ***
       idum=-1314
 c *** Set Sun position / velocity ***
@@ -472,51 +478,87 @@ c *** Interpolate ***
 c *** CHANGED ***
 c               goto 601
 c *** Calc number to generate ***
- 667                     if (xIMF.eq.1) then 
-                  Nsf=((Afac/(-1.35d0))*(MiMax**(-1.35d0)-Milb
-     &                 **(-1.35d0)))
-                  Ns=int(Nsf)
-                  if (ran1(idum).lt.(Nsf-Ns)) then
-                     Ns=Ns+1
-                  endif
-               else if (xIMF.eq.2) then
-                  if (Milb.ge.0.5d0) then
-                     Nsf=((Afac1/(-1.3d0))*(MiMax**(-1.3d0)-Milb
-     &                    **(-1.3d0)))
-                     Ns=int(Nsf)
-                     if (ran1(idum).lt.(Nsf-Ns)) then
-                        Ns=Ns+1
-                     endif
-                  else if (Milb.lt.0.5d0) then 
-                     Nsf1=((Afac1/(-1.3d0))*(MiMax**(-1.3d0)-0.5d0
-     &                    **(-1.3d0)))
-                     Nsf2=((Afac2/(-0.3d0))*(0.5d0
-     &                    **(-0.3d0)-Milb**(-0.3d0)))   
-                     Ns1=int(Nsf1)
-                     if (ran1(idum).lt.(Nsf1-Ns1)) then
-                        Ns1=Ns1+1
-                     endif
-                     Ns2=int(Nsf2)
-                     if (ran1(idum).lt.(Nsf2-Ns2)) then
-                        Ns2=Ns2+1
-                     endif
-                     Ns=Ns1+Ns2
-                  endif       
-               endif 
+  667          mu0 = Msmin
+               mu2 = 0.5d0
+               muMax = MiMax
+               mulb = Milb
+               write(6,*) Milb, MiMax
+               ! First, get cum. number of stars and cum. mass up to MiMax:
                if (xIMF.eq.1) then
-                  mtn=(Afac/(-0.35d0))
-     &                 *(MiMax**(-0.35d0)-Milb**(-0.35d0))
+                  k_IMF = m_p*0.35d0/(Msmin**(-0.35d0)
+     &                 -MiMax**(-0.35d0))
+                  Msf2=m_p
+                  Nsf2=k_IMF/(1.35d0)*((0.1d0)**(-1.35)
+     &                 -MiMax**(-1.35d0))
                else if (xIMF.eq.2) then
-                  if (Milb.ge.0.5d0) then
-                     mtn=(Afac1/(-0.3d0))
-     &                    *(MiMax**(-0.3d0)-Milb**(-0.3d0))
-                  else if (Milb.lt.0.5d0) then
-                     mtn=(Afac1/(-0.3d0))
-     &                    *(MiMax**(-0.3d0)-0.5d0**(-0.3d0))
-     &                    +(Afac2/(0.7d0))
-     &                    *(0.5d0**(0.7d0)-Milb**(0.7d0))
+                  eta01 = (1.d0-mu0**(0.7d0))/(0.7d0)!Common for all the parts of the kIMF
+                  if (MiMax.lt.0.5d0) then
+                     k_IMF=m_p*(0.7d0)/(0.7d0*eta01-1.0d0+muMax**(0.7))
+                     Msf2 = m_p
+                     
+                     chi01 = (mu0**(-0.3d0)-1.0d0)/(0.3d0)
+                     Nsf2=chi01+(1.0d0-muMax**(-0.3d0))/(0.3d0)
+                     Nsf2=k_IMF*Nsf2
+                  else
+                     eta01 = eta01+(mu2**(0.7d0)-1.d0)/(0.7d0)!Now eta0 absorbs eta1
+
+                     k_IMF= mu2**(0.7d0)-mu2*(muMax**(-0.3d0))! The denominator of the k_IMF
+                     k_IMF= 0.3d0*eta01 + k_IMF! The denominator of the k_IMF
+                     k_IMF = m_p*(0.3d0)/k_IMF
+                     Msf2 = m_p
+
+                     chi01 = (mu0**(-0.3d0)-mu2**(-0.3d0))/(0.3d0)
+
+                     Nsf2 = mu2**(-0.3d0)-mu2*(muMax**(-1.3d0))
+                     Nsf2 = k_IMF*(chi01 + Nsf2/(1.3d0))
                   endif
                endif
+
+               ! This is common for both
+               Ns2=int(Nsf2)
+               if (ran1(idum).lt.(Nsf2-Ns2)) then
+                  Ns2=Ns2+1
+               endif
+               
+               ! Second, get cum. number of stars and cum. mass up to Milb:               
+               if (xIMF.eq.1) then
+                  Msf1=k_IMF/(0.35d0)*(Msmin**(-0.35d0)-Milb**(-0.35d0))
+                  Nsf1=k_IMF/(1.35d0)*(Msmin**(-1.35d0)
+     &                 -Milb**(-1.35d0))
+               else if (xIMF.eq.2) then
+                  eta01 = (1.d0-mu0**(0.7d0))/(0.7d0)!Common for all the parts of the kIMF
+                  if (Milb.lt.0.5d0) then
+                     Msf1 = eta01+(1.d0-mulb**(0.7d0))/(-0.7d0)
+                     Msf1 = k_IMF*Msf1
+                     
+                     chi01 = (mu0**(-0.3d0)-1.0d0)/(0.3d0)
+                     Nsf1=chi01+(1.0d0-mulb**(-0.3d0))/(0.3d0)
+                     Nsf1=k_IMF*Nsf1
+                  else
+                     eta01 = eta01+(mu2**(0.7d0)-1.d0)/(0.7d0)!Now eta0 absorbs eta1
+
+                     Msf1= mu2**(0.7d0)-mu2*(mulb**(-0.3d0))
+                     Msf1= eta01 + Msf1/(0.3d0)
+                     Msf1 = k_IMF*Msf1
+                     
+                     chi01 = (mu0**(-0.3d0)-mu2**(-0.3d0))/(0.3d0)
+
+                     Nsf1 = mu2**(-0.3d0)-mu2*(mulb**(-1.3d0))
+                     Nsf1 = k_IMF*(chi01 + Nsf1/(1.3d0))
+                  endif
+               endif
+
+               ! This is common for both
+               Ns1=int(Nsf1)
+               if (ran1(idum).lt.(Nsf1-Ns1)) then
+                  Ns1=Ns1+1
+               endif
+               
+               ! Total number of stars:
+               Ns = Ns2-Ns1
+               mtn= Msf2-Msf1
+               
+
                if (Ns.lt.0.0d0) then
                   Ns=0
                   mtn=0.0d0
@@ -525,26 +567,42 @@ c *** Calc number to generate ***
                if (Ns.eq.0) then
                   goto 601
                endif
-c               write(6,*) q,Ns
 c *** Generate stars ***
                do m=0,Ns-1
                   R=ran1(idum)
 c *** Calculate stellar mass ***
                   if (xIMF.eq.1) then
                      mgen=(R*(MiMax**(-1.35d0))+(1.0d0-R)*(Milb
-     &                    **(-1.35d0)))**(1.0d0/(-1.35d0))
+     &                    **(-1.35d0)))**(1.0d0/(-1.35d0))!This is correct as it is
                   else if (xIMF.eq.2) then
-                     if (Milb.ge.0.5d0) then
-                        mgen=(R*(MiMax**(-1.3d0))+(1.0d0-R)
-     &                       *(Milb**(-1.3d0)))**(1.0d0/(-1.3d0))
-                     else if (Milb.lt.0.5d0) then
-                        if (m.lt.Ns1) then
-                           mgen=(R*(MiMax**(-1.3d0))+(1.0d0-R)
-     &                          *(0.5d0**(-1.3d0)))**(1.0d0/(-1.3d0))
-                        else
-                           mgen=(R*(0.5d0**(-0.3d0))+(1.0d0-R)
-     &                          *(Milb**(-0.3d0)))**(1.0d0/(-0.3d0))
-                        endif                     
+                  !Use my approach:
+                     if (MiMax.le.0.5d0) then
+                        mgen=(R*(MiMax**(-0.3d0))+(1.0d0-R)
+     &                       *(Milb**(-0.3d0)))**(1.0d0/(-0.3d0))
+                     else
+                        mu0 = mulb
+                        mu2 = merge(mu2,mu0,mu2.ge.mu0)
+                        chi01 = (mu0**(-0.3d0)-mu2**(-0.3d0))/(0.3d0)
+
+                        x2 = mu2**(-0.3d0)-mu2*(muMax**(-1.3d0))
+                        x2 = x2/(chi01*1.3d0)
+                        x2 = 1.0d0/(1.0d0+x2)
+                        
+                        x1 = mu0**(-0.3d0)-1.0d0
+                        x1 = x1/(mu0**(-0.3d0)-mu2**(-0.3d0))
+                        x1 = x2*x1
+                        
+                        mgen=mu0**(-0.3d0)
+     &                       +(mu2**(-0.3d0)-mu0**(-0.3d0))*R/x2
+                                                
+                        mgen2=mu2**(-1.3d0)
+                        mgen2=mgen2-R*(mu2**(-1.3d0)-muMax**(-1.3d0))
+                        mgen2=mgen2+1.3d0*mu2**(-1.0d0)*chi01*(1.0d0-R)
+                        
+                        mgen = merge(mgen,mgen2,R.lt.x2)
+                        eta01=merge(0.3d0,1.3d0,R.lt.x2) !Here eta01 is an ancilliary variable = the exponent
+                        mgen = mgen**(-1.0d0/eta01)
+
                      endif
                   endif
                   do l=lbegin,lend
@@ -554,6 +612,7 @@ c *** Interpolate for magnitudes, log(g) and T_eff ***
                         avgen=frac*(VMV(l)-VMV(l-1))+VMV(l-1)
                         aigen=frac*(VMI(l)-VMI(l-1))+VMI(l-1)
                         augen=frac*(VMU(l)-VMU(l-1))+VMU(l-1)
+
                         abgen=frac*(VMB(l)-VMB(l-1))+VMB(l-1)
                         argen=frac*(VMR(l)-VMR(l-1))+VMR(l-1)
                         ajgen=frac*(VMJ(l)-VMJ(l-1))+VMJ(l-1)
