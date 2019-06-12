@@ -10,11 +10,11 @@ Output: Stellar data.
 The code has a Makefile in the main directory, which compiles the source code in src.
 For anyone unfamiliar, to compile just type 'make' in the main directory
 
+You must dowload the extinction maps separately from https://1drv.ms/u/s!AnMgd4KLTt9j6HtlSWaRd9kP5Rem?e=QcCqax and place them in the ini folder (not inside UBV)
+
 --------
 
 (If you want to increase MN to include more than ~9125000 N-body particle model you may need to add -mcmodel=medium after TGAS-errors.F)
-
-(Note that the extinction maps are also available on https://drive.google.com/open?id=0B0xQIGDvKqHbbFNSRl9JVm90b2s. Some people have reported problems downloading them from git-lfs)
 
 Input in pop_synth.F is
 
