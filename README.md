@@ -144,3 +144,9 @@ Which are:
 72 Error on U
 73 Error on V
 74 error on W
+75 Teff
+76 logg
+77 observed Teff
+78 observed logg 
+79 Teff uncertainty
+80 logg uncertainty
