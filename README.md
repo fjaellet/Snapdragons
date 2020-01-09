@@ -3,7 +3,7 @@
 Snapdragons is a population synthesis &amp; mock survey data generation code - it creates synthetic stars from an N-body simulation of a galaxy. 
 Please cite the Snapdragons paper ([Hunt et al. 2015, MNRAS, 450, 2132](http://adsabs.harvard.edu/abs/2015MNRAS.450.2132H) if you use it for publications.
 
-This version is used in some of the hands-on session for the [Gaia-COST school in Barcelona ](https://github.com/Santiastro1/Gaia_School_BCN). It differs only in some superficial respects from the [original code](https://github.com/JASHunt/Snapdragons). Main contributors apart from [Jason Hunt](https://github.com/JASHunt) are [Santi Roca](https://github.com/Santiastro1) and [Mercé Romero](https://github.com/mromerog). 
+This version is used in some of the hands-on session for the [Gaia-COST school in Barcelona ](https://github.com/Santiastro1/Gaia_School_BCN). It differs only in some superficial respects from the [original code](https://github.com/JASHunt/Snapdragons). Main contributors of this version (apart from [Jason Hunt](https://github.com/JASHunt)) are [Santi Roca](https://github.com/Santiastro1) and [Mercé Romero](https://github.com/mromerog). 
 
 ## How does this work?
 
