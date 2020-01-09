@@ -5,7 +5,7 @@ c *** Mock generation options ***
       double precision usun,vsun,wsun,R0,usol,vsol,wsol
 
 c *** Output to binary (1) or ASCII (0)? ***
-      Binary=0
+      Binary=1
 c *** Minimum magnitude necessary ***
       ChosenLim=12.0d0
 c *** Add Gaia errors? (1=yes) ***

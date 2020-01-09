@@ -3,3 +3,4 @@ output/*
 ini/*.bin
 snapdragons
 Makefile_Jason
+*.fits

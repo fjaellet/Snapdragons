@@ -1,47 +1,34 @@
+#######################################
+#
+# snapdragons2fits.py
+#
+# This snippet converts snapdragons 
+#  output to a fits file readable with 
+#  standard astro tools
+#
+# Input: needs to be ascii (a bit slow)
+# Output: FITS
+#
+#######################################
 
-# convert gaia error data to fits file
+# input file name
+inputfile='../output/GeneratedStars.dat'
+# output file
+outfile='../output/snapdragons_gaia.fits'
 
-import pyfits
+
+from astropy.io import fits as pyfits
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from scipy import constants as const
-from FortranFile import FortranFile
 import struct
 from galpy.util import bovy_coords
 
-# input parameters
-# for distance vs. error
-# number of bin
-nbin=12
-# number of rmax (kpc)
-rmax=100.0
-# magnitude limit
-vmaglim=20.0
+# reading the data
+rdata=np.loadtxt(inputfile)
 
-# input file name
-inputfileint='../output/GeneratedStars-int.bin'
-inputfiledb='../output/GeneratedStars_compact.bin'
-# output file
-outfile='snapdragons_gaia.fits'
-
-# reading ASCIIthe data
-# rdata=np.loadtxt('ubgaiae-out.dat')
-# reading binary data
-f=FortranFile(inputfileint)
-nset=f.readInts()
-print ' input Number of stars =',nset
-f.close()
-f=FortranFile(inputfiledb)
-i=0
-rdata=np.zeros((nset,45))
-while i < nset:
-  rdata[i,:]=f.readReals('d')
-  i+=1
-f.close()
-
-print ' Number of stars=',nset
 # radian -> degree
 rdata[:,0]=180.0*rdata[:,0]/np.pi
 rdata[:,1]=180.0*rdata[:,1]/np.pi
