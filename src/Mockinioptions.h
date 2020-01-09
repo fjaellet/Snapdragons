@@ -25,8 +25,10 @@ c *** Set Sun position / velocity (kpc from center)***
       xsun=xsun/100.0d0
       ysun=ysun/100.0d0
       zsun=zsun/100.0d0
-c *** 1.1d0*VUKMS=228.14 km/s ***
+c *** Maximum radius around solar position to generate stars
+      rad_limit_kpc=10.0d0
 
+c *** 1.1d0*VUKMS=228.14 km/s ***
       Usol = 10.00d0 ! solar velocity(Dehnen i Binney 1998)
       Vsol = 5.25d0
       Wsol = 7.17d0

@@ -21,7 +21,7 @@ c from  IsoNo.txt (name of isochrone as function of metallicity)
      &     mbol(0:MN-1)
       double precision vl_p,vb_p,vlo_p,vbo_p,vrots,mtn,Nsf,z3,z4
       double precision M_hec,period,pmode,logMdot,intIMF,vcir
-      double precision mtotalneed
+      double precision mtotalneed,rad_limit_kpc
       double precision d_p,Milb,mag,mgen,sumgen,R,tss,month
       double precision x_p,y_p,z_p,vx_p,vy_p,vz_p,m_p,ex,ex31,ex148
       integer il,ib,ie1,ie2,ie3,ie4,ie5,ie6,ie7,ie8
@@ -157,7 +157,7 @@ c 2030 format(16(1pE13.5),I10)
 c *** For simpler file ***
       open(30,file='ini/input.dat',status='unknown')
 c 2030 format(9(1pE13.5))
-      np=10000000 !max number of particles
+      np=50000000 !max number of particles
       sumgen=0.0d0
       mtotalneed=0.0d0
       nparts=0
@@ -169,8 +169,8 @@ c         read(30,2030,end=603) dummy,dummy,dummy,x_p,y_p,z_p,dummy,
 c     &        dummy,vx_p,vy_p,vz_p,dummy,dummy,z,tss,m_p,dummyint
 c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar)
          read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,m_p,z1,z2,tss,
-     +zsh,z3,z4,vcir
-         z=z4*z3
+     +z3,z4,vcir
+         z=10**z1+10**z2*10**z1
 c         write(15,16) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
          nparts=nparts+1
          x_p=x_p/100.0d0
@@ -205,7 +205,7 @@ c        V-Mv=5(log(r)-1)
 
 c *** Cut in maximum radius
 
-         if(rp.lt.150.0/100.) then
+       if(rp.lt.rad_limit_kpc/100.) then
 
 c *** Find approproate isochrone segment ***
 c *** Random age & metallicity if unknown ***
