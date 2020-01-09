@@ -20,4 +20,26 @@ c canvi de km/s/kpc a 1/(100 Myr)
       parameter (Dg=(27.12825111d0*deg))
 
 
+c  Constants related to galactic potential
 
+      REAL*8 Mb,Md,Mh,K
+
+c values of the potential
+      PARAMETER (ZMsol = 1.989d33,! Msol in gm
+     +           abu = 0.387d0,! en Kpc
+     +           ad = 5.3178d0,
+     +           ah = 12.0d0,
+     +           bd = 0.25d0,
+     +           Mb = 1.406d10,!in Msol
+     +           Md = 8.561d10,!in Msol
+     +           Mh = 1.071d11)!in Msol
+
+c other variables:
+       PARAMETER(K=Gte*ZMsol/pc/1.d13,
+     +           abuabu=abu*abu,
+     +           bdbd=bd*bd,
+     +           rKMb=K*Mb,
+     +           q9=-3.d0*rKMb,
+     +           rKMd=K*Md,
+     +           q8=-3.d0*rKMd,
+     +           rKMh=K*Mh)

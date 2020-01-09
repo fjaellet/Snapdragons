@@ -72,7 +72,7 @@ c *** USER OPTIONS ***
 c *** Output to binary (1), binary compact for py/snapdragons2fits.py (2) or ASCII (0)? ***
       Binary=0
 c *** Minimum magnitude necessary ***
-      ChosenLim=16.0d0
+      ChosenLim=14.0d0
       write(6,*) 'Limited to V<',ChosenLim
 c fraction of output
       fsample=1.0d0
@@ -245,8 +245,8 @@ c *** Open input file ***
 c *** For example file (lbs.dat format)***
 c      open(30,file='ini/lbsels-2015-25deglt10.dat',status='unknown')
 c      open(30,file='ini/DaisukeInput.dat',status='unknown')
-
-
+c       open(30,file='ini/discstars_Rvir_cutFehcosJzJc_1.001.out'
+c     &      ,status='unknown')
 c      open(30,file='ini/l85-270bfullFaure.dat',status='unknown')
 c      open(30,file='ini/lbsels.dat',status='unknown')
 c 2030 format(16(1pE13.5),I10)
@@ -284,6 +284,7 @@ c *** For example file (old lbs.dat) ***
 c         read(30,2030,end=603) dummy,dummy,dummy,x_p,y_p,z_p,dummy,
 c     &        dummy,vx_p,vy_p,vz_p,dummy,dummy,z,tss,m_p,dummyint
 c *** x,y,z(kpc),vx,vy,vz(km/s),metallicity(z),age(Gyr),mass(solar)
+c         read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
          read(30,*,end=603) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p
 cz,tss,m_p
 c         write(15,16) x_p,y_p,z_p,vx_p,vy_p,vz_p,z,tss,m_p

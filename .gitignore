@@ -1,0 +1,5 @@
+src/*.o
+output/*
+ini/*.bin
+snapdragons
+Makefile_Jason
