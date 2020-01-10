@@ -22,6 +22,19 @@ The main module is called src/PopSynth.F, several options can be specified in Mo
 
 You must dowload the extinction maps separately from https://1drv.ms/u/s!AnMgd4KLTt9j6HtlSWaRd9kP5Rem?e=QcCqax and place them in the ini folder (not inside UBV)
 
+## Getting started
+
+Clone this repository to a place you like:
+
+    git clone https://github.com/fjaellet/Snapdragons
+
+Get familiar with the file structure. To compile snapdragons, you will need the gfortran compiler (or modify the Makefile to satisfy your own architechture). From the top-level directory, you should then be able to run
+
+    make
+    ./snapdragons
+
+- which in a few seconds will create you a mock observation of the default input simulation (ini/input.dat).
+
 --------
 
 ## Changing input parameters
@@ -45,8 +58,8 @@ Don't forget to recompile before rerunning.
 
 The default snapdragons output is stored in output/ as ascii or binary file without header.. There is, however, a python script in py/ that will convert this output to standard FITS file in the same directory:
     
-    ``cd py``
-    ``python snapdragons2fits.py``
+    cd py
+    python snapdragons2fits.py
 
 Output columns in the ascii/binary version are: 
 
