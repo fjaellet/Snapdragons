@@ -7,7 +7,7 @@ c *** Mock generation options ***
 c *** Output to binary (1) or ASCII (0)? ***
       Binary=1
 c *** Minimum magnitude necessary ***
-      ChosenLim=12.0d0
+      ChosenLim=13.0d0
 c *** Add Gaia errors? (1=yes) ***
       error=1
 c *** Add Milky Way Extinction (1=yes) ***

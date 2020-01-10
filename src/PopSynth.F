@@ -502,8 +502,8 @@ c *** Ascii ***
      &                             ,avgen-aigen,z,PAge,od_p,xo_p,yo_p
      &                             ,zo_p,vxo_p,vyo_p,vzo_p,vro_p,vroto_p
      &                             ,rp,vr_p,vrot_p,rop,makms,mdkms
-     &                             ,makmso,mdkmso,vl_p,vb_p,vlo_p,vbo_p
-     &                             ,l_p,b_p
+     &                             ,makmso,mdkmso,l_p,b_p
+     &                             ,vl_p,vb_p,vlo_p,vbo_p
 c *** Binary ***
                              else
                                 write(10) (a(j),j=1,6),(ao(j),j=1,6)
@@ -514,8 +514,8 @@ c *** Binary ***
      &                             ,avgen-aigen,z,PAge,od_p,xo_p,yo_p
      &                             ,zo_p,vxo_p,vyo_p,vzo_p,vro_p,vroto_p
      &                             ,rp,vr_p,vrot_p,rop,makms,mdkms
-     &                             ,makmso,mdkmso,vl_p,vb_p,vlo_p,vbo_p
-     &                             ,l_p,b_p
+     &                             ,makmso,mdkmso,l_p,b_p
+     &                             ,vl_p,vb_p,vlo_p,vbo_p
                               endif
                               GenSel=GenSel+1
 c                           endif

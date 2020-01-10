@@ -29,7 +29,7 @@ from galpy.util import bovy_coords
 # reading the data
 rdata=np.loadtxt(inputfile)
 
-# radian -> degree
+# radians -> degrees
 rdata[:,0]=180.0*rdata[:,0]/np.pi
 rdata[:,1]=180.0*rdata[:,1]/np.pi
 rdata[:,6]=180.0*rdata[:,6]/np.pi
@@ -102,36 +102,41 @@ tbhdu = pyfits.BinTableHDU.from_columns([\
   pyfits.Column(name='e_HRV',unit='(km/s)',format='D',array=rdata[:,17]),\
 # True
   pyfits.Column(name='G_true',unit='(mag)',format='D',array=rdata[:,18]),\
-  pyfits.Column(name='G_BP_true',unit='(mag)',format='D',array=rdata[:,20]),\
-  pyfits.Column(name='G_RP_true',unit='(mag)',format='D',array=rdata[:,21]),\
+  pyfits.Column(name='BP_RP_true',unit='(mag)',format='D',array=rdata[:,19]),\
 # Observed
-  pyfits.Column(name='G_obs',unit='(mag)',format='D',array=rdata[:,22]),\
-  pyfits.Column(name='G_BP_obs',unit='(mag)',format='D',array=rdata[:,24]),\
-  pyfits.Column(name='G_RP_obs',unit='(mag)',format='D',array=rdata[:,25]),\
+  pyfits.Column(name='G_obs',unit='(mag)',format='D',array=rdata[:,20]),\
+  pyfits.Column(name='BP_RP_obs',unit='(mag)',format='D',array=rdata[:,21]),\
 # Error
-  pyfits.Column(name='e_G',unit='(mag)',format='D',array=rdata[:,26]),\
-  pyfits.Column(name='e_G_BP',unit='(mag)',format='D',array=rdata[:,28]),\
-  pyfits.Column(name='e_G_RP',unit='(mag)',format='D',array=rdata[:,29]),\
+  pyfits.Column(name='e_G',unit='(mag)',format='D',array=rdata[:,22]),\
+  pyfits.Column(name='e_BP_RP',unit='(mag)',format='D',array=rdata[:,23]),\
 # True
-  pyfits.Column(name='Teff_true',unit='(K)',format='D',array=rdata[:,30]),\
-  pyfits.Column(name='logg_true',unit='(dex)',format='D',array=rdata[:,31]),\
-  pyfits.Column(name='[Fe/H]_true',unit='(dex)',format='D',array=rdata[:,32]),\
-  pyfits.Column(name='Av_true',unit='(mag)',format='D',array=rdata[:,33]),\
+  pyfits.Column(name='V_true',unit='(mag)',format='D',array=rdata[:,24]),\
+  pyfits.Column(name='dist_true',unit='(kpc)',format='D',array=rdata[:,25]),\
+  pyfits.Column(name='x_true',unit='(kpc)',format='D',array=rdata[:,26]),\
+  pyfits.Column(name='y_true',unit='(kpc)',format='D',array=rdata[:,27]),\
+  pyfits.Column(name='z_true',unit='(kpc)',format='D',array=rdata[:,28]),\
+  pyfits.Column(name='vx_true',unit='(km/s)',format='D',array=rdata[:,29]),\
+  pyfits.Column(name='vy_true',unit='(km/s)',format='D',array=rdata[:,30]),\
+  pyfits.Column(name='vz_true',unit='(km/s)',format='D',array=rdata[:,31]),\
+  pyfits.Column(name='vr_true',unit='(km/s)',format='D',array=rdata[:,50]),\
+  pyfits.Column(name='vphi_true',unit='(km/s)',format='D',array=rdata[:,51]),\
+  pyfits.Column(name='mass',unit='(M_sol)',format='D',array=rdata[:,32]),\
+  pyfits.Column(name='G_RVS',unit='(mag)',format='D',array=rdata[:,33]),\
+  pyfits.Column(name='V-I',unit='(mag)',format='D',array=rdata[:,34]),\
+  pyfits.Column(name='Av_true',unit='(mag)',format='D',array=rdata[:,35]),\
+  pyfits.Column(name='[Fe/H]_true',unit='(dex)',format='D',array=np.log10((rdata[:,38]/1000000.)/0.0152)),\
+  pyfits.Column(name='age_true',unit='(Gyr)',format='D',array=10.**(rdata[:,39])),\
 # Observed
-  pyfits.Column(name='Teff_obs',unit='(K)',format='D',array=rdata[:,34]),\
-  pyfits.Column(name='logg_obs',unit='(dex)',format='D',array=rdata[:,35]),\
-  pyfits.Column(name='[Fe/H]_obs',unit='(dex)',format='D',array=rdata[:,36]),\
-  pyfits.Column(name='Av_obs',unit='(mag)',format='D',array=rdata[:,37]),\
-# Errors
-  pyfits.Column(name='e_Teff',unit='(K)',format='D',array=rdata[:,38]),\
-  pyfits.Column(name='e_logg',unit='(dex)',format='D',array=rdata[:,39]),\
-  pyfits.Column(name='e_[Fe/H]',unit='(dex)',format='D',array=rdata[:,40]),\
-  pyfits.Column(name='e_Av',unit='(mag)',format='D',array=rdata[:,41]),\
-# V,VI,GRVS
-  pyfits.Column(name='V',unit='(mag)',format='D',array=rdata[:,42]),\
-  pyfits.Column(name='V-I',unit='(mag)',format='D',array=rdata[:,43]),\
-  pyfits.Column(name='G_RVS',unit='(mag)',format='D',array=rdata[:,44]),\
-# GLON and GLAT only true
+  pyfits.Column(name='dist_obs',unit='(kpc)',format='D',array=rdata[:,40]),\
+  pyfits.Column(name='x_obs',unit='(kpc)',format='D',array=rdata[:,41]),\
+  pyfits.Column(name='y_obs',unit='(kpc)',format='D',array=rdata[:,42]),\
+  pyfits.Column(name='z_obs',unit='(kpc)',format='D',array=rdata[:,43]),\
+  pyfits.Column(name='vx_obs',unit='(km/s)',format='D',array=rdata[:,44]),\
+  pyfits.Column(name='vy_obs',unit='(km/s)',format='D',array=rdata[:,45]),\
+  pyfits.Column(name='vz_obs',unit='(km/s)',format='D',array=rdata[:,46]),\
+  pyfits.Column(name='vr_obs',unit='(km/s)',format='D',array=rdata[:,47]),\
+  pyfits.Column(name='vphi_obs',unit='(km/s)',format='D',array=rdata[:,48]),\
+# GLON and GLAT 
   pyfits.Column(name='GLON_true',unit='(degree)',format='D',array=GLON_true),\
   pyfits.Column(name='GLAT_true',unit='(degree)',format='D',array=GLAT_true),\
 # pmGLON and pmGLAT true
@@ -147,7 +152,7 @@ tbhdu = pyfits.BinTableHDU.from_columns([\
 # Errors
   pyfits.Column(name='e_pmGLON',unit='(mas/yr)',format='D',\
     array=e_pmGLON),\
-  pyfits.Column(name='e_pmGLAT',unit='(mas/yr)',format='D',\
-    array=e_pmGLAT)])
+  pyfits.Column(name='e_pmGLAT',unit='(mas/yr)',format='D', array=e_pmGLAT)
+])
 tbhdu.writeto(outfile,clobber=True)
 
