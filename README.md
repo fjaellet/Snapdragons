@@ -1,7 +1,7 @@
 # snapdragons (Barcelona flavour)
 
 Snapdragons is a population synthesis &amp; mock survey data generation code - it creates synthetic stars from an N-body simulation of a galaxy. 
-Please cite the Snapdragons paper ([Hunt et al. 2015, MNRAS, 450, 2132](http://adsabs.harvard.edu/abs/2015MNRAS.450.2132H) if you use it for publications.
+Please cite the Snapdragons paper ([Hunt et al. 2015, MNRAS, 450, 2132](http://adsabs.harvard.edu/abs/2015MNRAS.450.2132H)) if you use it for publication.
 
 This version is used in some of the hands-on session for the [Gaia-COST school in Barcelona ](https://github.com/Santiastro1/Gaia_School_BCN). It differs only in some superficial respects from the [original code](https://github.com/JASHunt/Snapdragons). Main contributors of this version (apart from [Jason Hunt](https://github.com/JASHunt)) are [Santi Roca](https://github.com/Santiastro1) and [Mercé Romero](https://github.com/mromerog). 
 
@@ -48,7 +48,7 @@ The default snapdragons output is stored in output/ as ascii or binary file with
     ``cd py``
     ``python snapdragons2fits.py``
 
-Output columns are: 
+Output columns in the ascii/binary version are: 
 
 * 1 true ra
 * 2 true dec
@@ -84,7 +84,7 @@ Output columns are:
 * 32 vz 
 * 33 mass (solar mass)
 * 34 G_RVS
-* 35 V-Igen
+* 35 V-I
 * 36 extinction
 * 37 absolute V mag
 * 38 absolute V-i 
@@ -107,29 +107,6 @@ Output columns are:
 * 55 pmdec (km/s)
 * 56 observed pmra (km/s)
 * 57 observed pmdec (km/s)
-* 58 l
-* 59 b
-* 60 observed l
-* 61 observed b
-* 62 vl 
-* 63 vb
-* 64 observed vl
-* 65 observed vb
-* 66 u mag
-* 67 b mag
-* 68 r mag
-* 69 j mag
-* 70 h mag
-* 71 k mag
-* 72 Error on U
-* 73 Error on V
-* 74 error on W
-* 75 Teff
-* 76 logg
-* 77 observed Teff
-* 78 observed logg 
-* 79 Teff uncertainty
-* 80 logg uncertainty
 
 
 
